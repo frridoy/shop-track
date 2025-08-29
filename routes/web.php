@@ -12,4 +12,5 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 });
 
+require __DIR__ . '/branch.php';
 require __DIR__ . '/product.php';

@@ -10,6 +10,9 @@
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -77,6 +80,8 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
 
     <script>
         function toggleSidebar() {
@@ -99,6 +104,68 @@
         setTimeout(function() {
             $('.alert').fadeOut('slow');
         }, 5000);
+    </script>
+
+
+    <script>
+        (function() {
+            // Toastr configuration
+            toastr.options = {
+                "closeButton": true,
+                "debug": false,
+                "newestOnTop": false,
+                "progressBar": true,
+                "positionClass": "toast-top-right",
+                "preventDuplicates": false,
+                "onclick": null,
+                "showDuration": "300",
+                "hideDuration": "1000",
+                "timeOut": "5000",
+                "extendedTimeOut": "1000",
+                "showEasing": "swing",
+                "hideEasing": "linear",
+                "showMethod": "fadeIn",
+                "hideMethod": "fadeOut"
+            };
+
+            // Function to show toastr notifications
+            function showToastr(message, type) {
+                switch (type) {
+                    case 'success':
+                        toastr.success(message);
+                        break;
+                    case 'error':
+                        toastr.error(message);
+                        break;
+                    case 'info':
+                        toastr.info(message);
+                        break;
+                    case 'warning':
+                        toastr.warning(message);
+                        break;
+                }
+            }
+
+            @if (Session::has('success'))
+                showToastr("{{ session('success') }}", 'success');
+            @endif
+
+            @if (Session::has('error'))
+                showToastr("{{ session('error') }}", 'error');
+            @endif
+
+            @if (Session::has('warning'))
+                showToastr("{{ session('warning') }}", 'warning');
+            @endif
+
+            @if (Session::has('info'))
+                showToastr("{{ session('info') }}", 'info');
+            @endif
+
+            @if (Session::has('message'))
+                showToastr("{{ session('message') }}", 'success');
+            @endif
+        })();
     </script>
 
     @stack('scripts')
