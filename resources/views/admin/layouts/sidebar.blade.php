@@ -100,7 +100,7 @@
                     href="#" data-bs-toggle="collapse" data-bs-target="#ordersMenu" aria-expanded="false">
                     <i class="fas fa-shopping-cart"></i>
                     <span class="nav-text">Orders</span>
-                    <span class="badge bg-danger ms-auto">12</span>
+                    {{-- <span class="badge bg-danger ms-auto">12</span> --}}
                 </a>
                 <div class="collapse {{ request()->routeIs('admin.orders.*') ? 'show' : '' }}" id="ordersMenu">
                     <ul class="nav flex-column ms-3">
