@@ -91,6 +91,7 @@
                     if (data.status == 1) {
                         toastr.success(data.message);
                         $(form)[0].reset();
+                        window.location.href = data.redirect;
                     }
                 },
                 error: function(xhr) {

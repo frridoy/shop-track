@@ -10,7 +10,8 @@ class BranchController extends Controller
 {
     public function index()
     {
-        return view('admin.branch.index');
+        $branches = Branch::get();
+        return view('admin.branch.index', compact('branches'));
     }
 
     public function create()
@@ -44,6 +45,7 @@ class BranchController extends Controller
             return response()->json([
                 'status' => 1,
                 'message' => 'Branch Created Successfully',
+                'redirect' => route('branches.index')
             ]);
         }
     }
