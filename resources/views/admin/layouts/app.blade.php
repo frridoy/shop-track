@@ -69,16 +69,6 @@
             @include('admin.layouts.header')
 
             <div class="content-wrapper">
-                <div class="page-header">
-                    <h1 class="page-title">@yield('page-title', 'Dashboard')</h1>
-                    @hasSection('breadcrumb')
-                        <nav class="breadcrumb-nav" aria-label="breadcrumb">
-                            <ol class="breadcrumb mb-0">
-                                @yield('breadcrumb')
-                            </ol>
-                        </nav>
-                    @endif
-                </div>
                 @yield('content')
             </div>
             @include('admin.layouts.footer')
