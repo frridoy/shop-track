@@ -27,12 +27,17 @@ class BranchController extends Controller
             'branch_address' => 'required',
         ]);
 
+        $lastCode = Branch::latest('id')->value('branch_code');
+        $number = $lastCode ? (int) substr($lastCode, 1) + 1 : 1;
+        $branch_code = 'B' . str_pad($number, 4, '0', STR_PAD_LEFT);
+
         $branch = Branch::create([
             'branch_name' => ucwords($request->branch_name),
             'branch_email' => $request->branch_email,
             'branch_contact' => $request->branch_contact,
             'branch_address' => $request->branch_address,
             'is_active' => $request->is_active,
+            'branch_code' => $branch_code,
         ]);
 
         if ($branch) {
