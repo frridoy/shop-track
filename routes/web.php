@@ -14,3 +14,4 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
 require __DIR__ . '/branch.php';
 require __DIR__ . '/product.php';
+require __DIR__ . '/lookup.php';
