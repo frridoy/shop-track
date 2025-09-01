@@ -10,7 +10,7 @@ class LookupController extends Controller
 {
     public function index()
     {
-        $lookups = Lookup::select('lookup_name', 'lookup_type', 'is_active', 'created_by')->whereNull('is_updated')->get();
+        $lookups = Lookup::select('id', 'lookup_name', 'lookup_type', 'is_active', 'created_by')->whereNull('is_updated')->get();
         return view('admin.lookup.index', compact('lookups'));
     }
 
@@ -39,5 +39,45 @@ class LookupController extends Controller
                 'redirect' => route('lookup.index')
             ]);
         }
+    }
+    public function edit($id)
+    {
+        $lookup = Lookup::findOrFail($id);
+        return view('admin.lookup.edit', compact('lookup'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'lookup_name' => 'required|string|max:100',
+            'lookup_type' => 'required',
+        ]);
+
+        $lookup = Lookup::findOrFail($id);
+
+        if ($lookup->lookup_name != $request->lookup_name) {
+
+            $lookup->update([
+                'is_updated' => 1,
+            ]);
+            Lookup::create([
+                'lookup_type' => $request->lookup_type,
+                'lookup_name' => $request->lookup_name,
+                'is_active'   => $request->is_active,
+            ]);
+
+        } else {
+            $lookup->update([
+                'lookup_type' => $request->lookup_type,
+                'lookup_name' => $request->lookup_name,
+                'is_active'   => $request->is_active,
+            ]);
+        }
+
+        return response()->json([
+            'status'   => 1,
+            'message'  =>'Lookup updated successfully',
+            'redirect' => route('lookup.index'),
+        ]);
     }
 }
