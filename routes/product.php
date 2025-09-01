@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\ProductTypeController;
 use Illuminate\Support\Facades\Route;
 
@@ -15,6 +16,12 @@ Route::group(
         Route::post('types/store', [ProductTypeController::class, 'store'])->name('types.store');
         Route::get('types/edit/{id}', [ProductTypeController::class, 'edit'])->name('types.edit');
         Route::put('types/update/{id}', [ProductTypeController::class, 'update'])->name('types.update');
+
+        Route::get('index', [ProductController::class, 'index'])->name('index');
+        Route::get('create', [ProductTypeController::class, 'create'])->name('create');
+        Route::post('store', [ProductTypeController::class, 'store'])->name('store');
+        Route::get('edit/{id}', [ProductTypeController::class, 'edit'])->name('edit');
+        Route::put('update/{id}', [ProductTypeController::class, 'update'])->name('update');
 
     }
 );

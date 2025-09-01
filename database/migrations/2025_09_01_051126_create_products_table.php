@@ -14,10 +14,9 @@ return new class extends Migration
         Schema::create('products', function (Blueprint $table) {
             $table->id();
             $table->foreignId('product_type_id')->constrained('product_types')->onDelete('cascade');
-            $table->string('product_name', 100)->unique();
-            $table->integer('product_qty')->default(0);
-            $table->decimal('product_max_price', 10, 2)->nullable();
-            $table->decimal('product_bottom_price', 10, 2);
+            $table->string('entry_no')->nullable()->index();
+            $table->string('product_name', 100);
+            $table->string('product_code', 50)->unique(); // auto-generated
             $table->string('remarks')->nullable();
             $table->tinyInteger('is_active')->default(1);
             $table->tinyInteger('is_updated')->nullable();
