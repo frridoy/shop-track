@@ -11,10 +11,26 @@ use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        return view('admin.product.index');
+        $query = Product::with('type:id,product_type_name');
+
+        if ($request->filled('search')) {
+            $query->where('product_name', 'like', '%' . $request->search . '%');
+        }
+
+        if ($request->filled('category')) {
+            $query->whereHas('type', function ($q) use ($request) {
+                $q->where('product_type_name', $request->category);
+            });
+        }
+
+        $productTypes = ProductType::where('is_active', 1)->get();
+        $products = $query->orderBy('id', 'desc')->paginate(10)->withQueryString();
+
+        return view('admin.product.index', compact('products', 'productTypes'));
     }
+
     public function create()
     {
         $productTypes = ProductType::where('is_active', 1)
