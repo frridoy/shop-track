@@ -13,16 +13,22 @@ class Product extends Model
         'product_type_id',
         'product_name',
         'product_code',
-        'remarks',
         'entry_no',
+        'color',
+        'size',
+        'stock_qty',
+        'purchase_price',
+        'selling_price',
+        'bottom_price',
+        'remarks',
         'is_active',
         'is_updated',
         'created_by',
+        'updated_by',
     ];
 
     public function type()
     {
         return $this->belongsTo(ProductType::class);
     }
-
 }

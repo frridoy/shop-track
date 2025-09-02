@@ -3,6 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Lookup;
+use App\Models\Product;
+use App\Models\ProductType;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
@@ -11,9 +15,85 @@ class ProductController extends Controller
     {
         return view('admin.product.index');
     }
-
     public function create()
     {
-        return view('admin.product.create');
+        $productTypes = ProductType::where('is_active', 1)
+            ->whereNull('is_updated')
+            ->select('id', 'product_type_name')
+            ->get();
+
+        $sizes = Lookup::where('lookup_type', 1)->select('id', 'lookup_name')->get();
+        $colors = Lookup::where('lookup_type', 2)->select('id', 'lookup_name')->get();
+        return view('admin.product.create', compact('productTypes', 'sizes', 'colors'));
+    }
+    public function store(Request $request)
+    {
+        $rules = [
+            'product_type_id' => 'required|exists:product_types,id',
+            'products' => 'required|array|min:1',
+            'products.*.product_name' => 'required|string|max:100|distinct',
+            'products.*.color' => 'nullable|string|max:50',
+            'products.*.size' => 'nullable|string|max:50',
+            'products.*.stock_qty' => 'required|numeric|min:0',
+            'products.*.purchase_price' => 'required|numeric|min:0',
+            'products.*.selling_price' => 'required|numeric|min:0',
+            'products.*.bottom_price' => 'required|numeric|min:0',
+            'products.*.remarks' => 'nullable|string|max:255',
+            'products.*.is_active' => 'required|in:0,1',
+        ];
+
+        $messages = [];
+        foreach ($request->products ?? [] as $i => $product) {
+            $row = $i + 1;
+            $messages["products.$i.product_name.required"] = "Product #$row Name is required.";
+            $messages["products.$i.stock_qty.required"] = "Product #$row Stock Qty is required.";
+            $messages["products.$i.purchase_price.required"] = "Product #$row Purchase Price is required.";
+            $messages["products.$i.selling_price.required"] = "Product #$row Selling Price is required.";
+            $messages["products.$i.bottom_price.required"] = "Product #$row Bottom Price is required.";
+            $messages["products.$i.is_active.required"] = "Product #$row Status is required.";
+        }
+
+        $request->validate($rules, $messages);
+
+        $productTypeId = $request->product_type_id;
+        $productsData = $request->products;
+        $createdBy = 1;
+
+        $now = Carbon::now();
+        $month = $now->format('m');
+        $year = $now->format('y');
+
+        $lastProduct = Product::whereYear('created_at', $now->year)
+            ->where('product_code', 'like', 'P' . $month . $year . '-%')
+            ->orderByDesc('product_code')
+            ->first();
+
+        $startSequence = 1;
+        if ($lastProduct && preg_match('/P\d{4}-(\d{4})/', $lastProduct->product_code, $matches)) {
+            $startSequence = (int)$matches[1] + 1;
+        }
+
+        foreach ($productsData as $index => $product) {
+            $sequence = $startSequence + $index;
+            $code = 'P' . $month . $year . '-' . str_pad($sequence, 4, '0', STR_PAD_LEFT);
+
+            Product::create([
+                'product_type_id' => $productTypeId,
+                'product_name' => $product['product_name'],
+                'entry_no' => Product::max('entry_no') + 1,
+                'color' => $product['color'] ?? null,
+                'size' => $product['size'] ?? null,
+                'stock_qty' => $product['stock_qty'],
+                'purchase_price' => $product['purchase_price'],
+                'selling_price' => $product['selling_price'],
+                'bottom_price' => $product['bottom_price'],
+                'remarks' => $product['remarks'] ?? null,
+                'is_active' => $product['is_active'],
+                'product_code' => $code,
+                'created_by' => $createdBy,
+            ]);
+        }
+
+        return redirect()->route('products.index')->with('success', 'Products added successfully!');
     }
 }

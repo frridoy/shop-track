@@ -18,10 +18,10 @@ Route::group(
         Route::put('types/update/{id}', [ProductTypeController::class, 'update'])->name('types.update');
 
         Route::get('index', [ProductController::class, 'index'])->name('index');
-        Route::get('create', [ProductTypeController::class, 'create'])->name('create');
-        Route::post('store', [ProductTypeController::class, 'store'])->name('store');
-        Route::get('edit/{id}', [ProductTypeController::class, 'edit'])->name('edit');
-        Route::put('update/{id}', [ProductTypeController::class, 'update'])->name('update');
+        Route::get('create', [ProductController::class, 'create'])->name('create');
+        Route::post('store', [ProductController::class, 'store'])->name('store');
+        Route::get('edit/{id}', [ProductController::class, 'edit'])->name('edit');
+        Route::put('update/{id}', [ProductController::class, 'update'])->name('update');
 
     }
 );
