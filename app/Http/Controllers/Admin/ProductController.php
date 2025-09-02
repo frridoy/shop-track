@@ -8,6 +8,7 @@ use App\Models\Product;
 use App\Models\ProductType;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Milon\Barcode\DNS1D;
 
 class ProductController extends Controller
 {
@@ -44,12 +45,13 @@ class ProductController extends Controller
     }
     public function store(Request $request)
     {
+        // 1. Validation rules
         $rules = [
             'product_type_id' => 'required|exists:product_types,id',
             'products' => 'required|array|min:1',
             'products.*.product_name' => 'required|string|max:100|distinct',
-            'products.*.color' => 'nullable|string|max:50',
-            'products.*.size' => 'nullable|string|max:50',
+            'products.*.color' => 'nullable|numeric|exists:lookups,id',
+            'products.*.size' => 'nullable|numeric|exists:lookups,id',
             'products.*.stock_qty' => 'required|numeric|min:0',
             'products.*.purchase_price' => 'required|numeric|min:0',
             'products.*.selling_price' => 'required|numeric|min:0',
@@ -58,6 +60,7 @@ class ProductController extends Controller
             'products.*.is_active' => 'required|in:0,1',
         ];
 
+        // 2. Custom error messages
         $messages = [];
         foreach ($request->products ?? [] as $i => $product) {
             $row = $i + 1;
@@ -73,12 +76,13 @@ class ProductController extends Controller
 
         $productTypeId = $request->product_type_id;
         $productsData = $request->products;
-        $createdBy = 1;
+        $createdBy = auth()->id() ?? 1;
 
         $now = Carbon::now();
         $month = $now->format('m');
         $year = $now->format('y');
 
+        // 3. Determine next product code sequence
         $lastProduct = Product::whereYear('created_at', $now->year)
             ->where('product_code', 'like', 'P' . $month . $year . '-%')
             ->orderByDesc('product_code')
@@ -89,11 +93,18 @@ class ProductController extends Controller
             $startSequence = (int)$matches[1] + 1;
         }
 
+        // 4. Collect all size and color IDs
+        $sizeIds = collect($productsData)->pluck('size')->filter()->unique();
+        $colorIds = collect($productsData)->pluck('color')->filter()->unique();
+        $lookups = Lookup::whereIn('id', $sizeIds->merge($colorIds))->get()->keyBy('id');
+
+        // 5. Create products
+        $createdProducts = [];
         foreach ($productsData as $index => $product) {
             $sequence = $startSequence + $index;
             $code = 'P' . $month . $year . '-' . str_pad($sequence, 4, '0', STR_PAD_LEFT);
 
-            Product::create([
+            $createdProduct = Product::create([
                 'product_type_id' => $productTypeId,
                 'product_name' => $product['product_name'],
                 'entry_no' => Product::max('entry_no') + 1,
@@ -108,8 +119,15 @@ class ProductController extends Controller
                 'product_code' => $code,
                 'created_by' => $createdBy,
             ]);
+
+            // 6. size and color names for barcode view
+            $createdProduct->size_name = $product['size'] ? ($lookups[$product['size']]->lookup_name ?? null) : null;
+            $createdProduct->color_name = $product['color'] ? ($lookups[$product['color']]->lookup_name ?? null) : null;
+
+            $createdProducts[] = $createdProduct;
         }
 
-        return redirect()->route('products.index')->with('success', 'Products added successfully!');
+        // 7. Return to barcode view
+        return view('admin.product.barcode', compact('createdProducts'));
     }
 }
