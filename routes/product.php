@@ -8,6 +8,7 @@ Route::group(
     [
         'prefix' => 'products/',
         'as'     => 'products.',
+        'middleware' => ['auth'],
     ],
     function () {
 

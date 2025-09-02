@@ -154,12 +154,13 @@
                                 <hr class="dropdown-divider">
                             </li>
                             <li>
-                                <form method="POST" action="">
+                                <form action="{{ route('logout') }}" method="POST" class="d-inline">
                                     @csrf
                                     <button type="submit" class="dropdown-item">
-                                        <i class="fas fa-sign-out-alt me-2"></i>Logout
+                                        <i class="fas fa-sign-out-alt me-2"></i> Logout
                                     </button>
                                 </form>
+
                             </li>
                         </ul>
                     </div>
