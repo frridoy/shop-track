@@ -25,6 +25,5 @@ Route::group(
         Route::put('update/{id}', [ProductController::class, 'update'])->name('update');
         Route::get('products/{product}/barcode', [ProductController::class, 'singleBarcode'])->name('barcode');
 
-
     }
 );

@@ -8,6 +8,7 @@ use App\Models\Product;
 use App\Models\ProductType;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Milon\Barcode\DNS1D;
 
 class ProductController extends Controller
@@ -76,7 +77,7 @@ class ProductController extends Controller
 
         $productTypeId = $request->product_type_id;
         $productsData = $request->products;
-        $createdBy = auth()->id() ?? 1;
+        $createdBy = Auth::id();
 
         $now = Carbon::now();
         $month = $now->format('m');
