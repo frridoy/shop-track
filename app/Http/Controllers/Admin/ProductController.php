@@ -130,4 +130,13 @@ class ProductController extends Controller
         // 7. Return to barcode view
         return view('admin.product.barcode', compact('createdProducts'));
     }
+    public function singleBarcode(Product $product)
+    {
+        $product->color_name = Lookup::find($product->color)->lookup_name ?? null;
+        $product->size_name  = Lookup::find($product->size)->lookup_name ?? null;
+
+        $createdProducts = [$product];
+
+        return view('admin.product.barcode', compact('createdProducts'));
+    }
 }

@@ -91,7 +91,7 @@
                         {!! DNS1D::getBarcodeHTML($product->product_code, 'C128') !!}
                     </div>
 
-                    <div class="selling-price">Price: {{ $product->selling_price }}</div>
+                    <div class="selling-price">Price: {{ $product->selling_price }} BDT</div>
                 </div>
             @endforeach
         </div>

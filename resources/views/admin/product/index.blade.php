@@ -74,10 +74,18 @@
                                             <span class="badge bg-secondary">Inactive</span>
                                         @endif
                                     </td>
-                                    <td>
-                                        <a href="{{ route('products.edit', $product->id) }}"
-                                            class="btn btn-sm btn-info">Edit</a>
+                                    <td class="text-center">
+                                        <a href="{{ route('products.edit', $product->id) }}" class="text-info me-2"
+                                            title="Edit">
+                                            <i class="bi bi-pencil-square" style="font-size: 1rem;"></i>
+                                        </a>
+                                        <a href="{{ route('products.barcode', $product->id) }}" target="_blank"
+                                            class="text-primary" title="Print Barcode">
+                                            <i class="bi bi-upc-scan" style="font-size: 1rem;"></i>
+                                        </a>
                                     </td>
+
+
                                 </tr>
                             @empty
                                 <tr>
