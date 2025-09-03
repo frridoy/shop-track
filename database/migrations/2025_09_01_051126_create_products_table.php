@@ -16,7 +16,13 @@ return new class extends Migration
             $table->foreignId('product_type_id')->constrained('product_types')->onDelete('cascade');
             $table->string('entry_no')->nullable()->index();
             $table->string('product_name', 100);
-            $table->string('product_code', 50)->unique(); // auto-generated
+            $table->string('product_code', 50)->unique();
+            $table->string('color', 50)->nullable();
+            $table->string('size', 50)->nullable();
+            $table->decimal('stock_qty', 10, 2)->default(0);
+            $table->decimal('purchase_price', 12, 2)->default(0);
+            $table->decimal('selling_price', 12, 2)->default(0);
+            $table->decimal('bottom_price', 12, 2)->default(0);
             $table->string('remarks')->nullable();
             $table->tinyInteger('is_active')->default(1);
             $table->tinyInteger('is_updated')->nullable();

@@ -7,6 +7,7 @@ Route::group(
     [
         'prefix' => 'branches/',
         'as'     => 'branches.',
+        'middleware' => ['auth'],
     ],
     function () {
 
@@ -15,6 +16,5 @@ Route::group(
         Route::post('store', [BranchController::class, 'store'])->name('store');
         Route::get('edit/{id}', [BranchController::class, 'edit'])->name('edit');
         Route::put('update/{id}', [BranchController::class, 'update'])->name('update');
-
     }
 );
