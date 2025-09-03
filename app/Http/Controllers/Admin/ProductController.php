@@ -125,18 +125,26 @@ class ProductController extends Controller
             $createdProduct->size_name = $product['size'] ? ($lookups[$product['size']]->lookup_name ?? null) : null;
             $createdProduct->color_name = $product['color'] ? ($lookups[$product['color']]->lookup_name ?? null) : null;
 
-            $createdProducts[] = $createdProduct;
+            // 7. Push same product multiple times = stock_qty barcodes
+            for ($i = 0; $i < $product['stock_qty']; $i++) {
+                $createdProducts[] = $createdProduct;
+            }
         }
 
         // 7. Return to barcode view
         return view('admin.product.barcode', compact('createdProducts'));
     }
-    public function singleBarcode(Product $product)
+    public function singleProductBarcode(Product $product)
     {
-        $product->color_name = Lookup::find($product->color)->lookup_name ?? null;
-        $product->size_name  = Lookup::find($product->size)->lookup_name ?? null;
+        // attach color & size names
+        $product->color_name = $product->color ? (Lookup::find($product->color)->lookup_name ?? null) : null;
+        $product->size_name  = $product->size ? (Lookup::find($product->size)->lookup_name ?? null) : null;
 
-        $createdProducts = [$product];
+        // repeat product according to stock_qty
+        $createdProducts = [];
+        for ($i = 0; $i < $product->stock_qty; $i++) {
+            $createdProducts[] = $product;
+        }
 
         return view('admin.product.barcode', compact('createdProducts'));
     }

@@ -75,7 +75,40 @@
     <div class="container-fluid">
         <h4 class="mb-3">Generated Barcodes</h4>
 
-        <div id="printable-area" class="barcode-grid">
+        <div class="barcode-grid d-print-none">
+            @php
+                $grouped = collect($createdProducts)->groupBy('product_code');
+            @endphp
+
+            @foreach ($grouped as $code => $products)
+                @php
+                    $product = $products->first();
+                    $qty = $products->count();
+                @endphp
+                <div class="barcode-card">
+                    <div class="barcode-name">
+                        {{ $product->product_name }}
+                        @if ($product->color_name || $product->size_name)
+                            ({{ $product->color_name ?? '-' }} - {{ $product->size_name ?? '-' }})
+                        @endif
+                    </div>
+
+                    <div class="barcode-code">{{ $product->product_code }}</div>
+
+                    <div class="barcode-image">
+                        {!! DNS1D::getBarcodeHTML($product->product_code, 'C128') !!}
+                    </div>
+
+                    <div class="selling-price">Price: {{ $product->selling_price }} BDT</div>
+
+                    <div class="mt-2">
+                        <span class="badge bg-dark">x{{ $qty }}</span>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+
+        <div id="printable-area" class="barcode-grid d-none d-print-grid">
             @foreach ($createdProducts as $product)
                 <div class="barcode-card">
                     <div class="barcode-name">
@@ -103,6 +136,7 @@
     </div>
 
     <script>
+        // Auto confirm print on load
         window.addEventListener('load', function() {
             const shouldPrint = confirm('Do you want to print the barcodes now?');
 
