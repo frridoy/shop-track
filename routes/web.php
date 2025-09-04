@@ -15,5 +15,6 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
 require __DIR__ . '/auth.php';
 require __DIR__ . '/lookup.php';
 require __DIR__ . '/branch.php';
+require __DIR__ . '/user.php';
 require __DIR__ . '/product.php';
 require __DIR__ . '/customer.php';
