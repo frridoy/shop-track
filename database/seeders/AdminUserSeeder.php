@@ -19,6 +19,10 @@ class AdminUserSeeder extends Seeder
             [
                 'name' => 'Admin',
                 'password' => Hash::make('password'),
+                'user_type' => 1,
+                'phone_no' => '01614898789',
+                'date_of_joining' => date('Y-m-d'),
+                'created_by' => 1,
             ]
         );
     }

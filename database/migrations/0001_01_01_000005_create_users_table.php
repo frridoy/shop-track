@@ -13,10 +13,22 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('branch_id')->nullable()->constrained('branches')->onDelete('cascade')->index();
             $table->string('name');
+            $table->tinyInteger('user_type');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->string('phone_no')->unique();
+            $table->string('address')->nullable();
+            $table->string('dob')->nullable();
+            $table->enum('sex', ['male', 'female', 'other'])->nullable();
+            $table->string('blood_group')->nullable();
+            $table->string('emergency_contact')->nullable();
+            $table->date('date_of_joining');
+            $table->date('date_of_leaving')->nullable();
+            $table->tinyInteger('is_active')->default(1)->index();
+            $table->unsignedBigInteger('created_by');
             $table->rememberToken();
             $table->timestamps();
         });
