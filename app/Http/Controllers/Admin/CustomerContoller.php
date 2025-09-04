@@ -11,7 +11,8 @@ class CustomerContoller extends Controller
 {
     public function index()
     {
-        return view('admin.customer.index');
+        $customers = Customer::select('id', 'name', 'email', 'mobile_no', 'sex', 'blood_group', 'dob', 'address', 'is_active')->get();
+        return view('admin.customer.index', compact('customers'));
     }
     public function create()
     {
