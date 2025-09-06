@@ -13,7 +13,13 @@ class UserController extends Controller
 {
     public function index()
     {
-        return view('admin.user-registration.index');
+        $users = User::with('branch:id,branch_name')
+            ->where('user_type', '!=', 1)
+            ->whereHas('branch', function ($query) {
+                $query->where('is_active', 1);
+            })
+            ->orderBy('id', 'desc')->get();
+        return view('admin.user-registration.index', compact('users'));
     }
 
     public function create()
@@ -59,13 +65,13 @@ class UserController extends Controller
             'created_by' => Auth::id(),
         ]);
 
-      if($user){
-        return response()->json([
-            'status' => 1,
-            'message' => 'User Created Successfully',
-            'redirect' => route('users.create')
-        ]);
-      }
+        if ($user) {
+            return response()->json([
+                'status' => 1,
+                'message' => 'User Created Successfully',
+                'redirect' => route('users.create')
+            ]);
+        }
     }
 
     public function edit($id)
