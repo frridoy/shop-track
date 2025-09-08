@@ -61,7 +61,13 @@
 
                                     <td>{{ number_format($order->total_price, 2) }}</td>
                                     <td>{{ $order->created_at->format('Y-m-d H:i:s') }}</td>
-                                    <td></td>
+                                    <td>
+                                        <button class="btn btn-info btn-sm open-modal"
+                                            data-url="{{ route('orders.show', $order->id) }}"
+                                            data-title="Order #{{ $order->id }}">
+                                            View
+                                        </button>
+                                    </td>
                                 </tr>
                             @empty
                                 <td colspan="8" class="text-danger"> No Order Found</td>
