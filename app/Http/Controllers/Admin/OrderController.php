@@ -13,6 +13,11 @@ use Illuminate\Support\Facades\Log;
 
 class OrderController extends Controller
 {
+    public function index()
+    {
+        $orders = Order::with(['customer', 'orderDetails'])->get();
+        return view('admin.order.index', compact('orders'));
+    }
     public function create()
     {
         $customers = Customer::all();
