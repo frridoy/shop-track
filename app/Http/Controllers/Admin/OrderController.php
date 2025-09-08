@@ -15,7 +15,14 @@ class OrderController extends Controller
 {
     public function index()
     {
-        $orders = Order::with(['customer', 'orderDetails'])->get();
+        $orders = Order::with([
+            'customer:id,name,mobile_no',
+            'orderDetails:id,order_id,product_id,quantity,selling_price,color,size',
+            'orderDetails.product:id,product_name,product_code'
+        ])
+        ->select('id', 'customer_id', 'customer_name', 'customer_mobile', 'total_price', 'created_at')
+        ->get();
+
         return view('admin.order.index', compact('orders'));
     }
     public function create()
