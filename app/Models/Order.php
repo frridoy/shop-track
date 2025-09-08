@@ -12,6 +12,7 @@ class Order extends Model
 
     protected $fillable = [
         'customer_id',
+        'branch_id',
         'customer_name',
         'customer_mobile',
         'total_price',
@@ -25,5 +26,10 @@ class Order extends Model
     public function orderDetails()
     {
         return $this->hasMany(OrderDetail::class, 'order_id');
+    }
+
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class, 'branch_id');
     }
 }
