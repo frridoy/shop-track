@@ -148,4 +148,12 @@ class ProductController extends Controller
 
         return view('admin.product.barcode', compact('createdProducts'));
     }
+
+    public function show($id)
+    {
+        $product = Product::with('type')->findOrFail($id);
+        $size = Lookup::where('lookup_type', 1)->where('id', $product->size)->value('lookup_name');
+        $color = Lookup::where('lookup_type', 2)->where('id', $product->color)->value('lookup_name');
+        return view('admin.product.show', compact('product', 'size', 'color'));
+    }
 }

@@ -23,6 +23,7 @@ Route::group(
         Route::post('store', [ProductController::class, 'store'])->name('store');
         Route::get('edit/{id}', [ProductController::class, 'edit'])->name('edit');
         Route::put('update/{id}', [ProductController::class, 'update'])->name('update');
+        Route::get('show/{id}', [ProductController::class, 'show'])->name('show');
         Route::get('products/{product}/barcode', [ProductController::class, 'singleProductBarcode'])->name('barcode');
 
     }

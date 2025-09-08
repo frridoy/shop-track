@@ -75,17 +75,16 @@
                                         @endif
                                     </td>
                                     <td class="text-center">
-                                        <a href="{{ route('products.edit', $product->id) }}" class="text-info me-2"
-                                            title="Edit">
-                                            <i class="bi bi-pencil-square" style="font-size: 1rem;"></i>
-                                        </a>
                                         <a href="{{ route('products.barcode', $product->id) }}" target="_blank"
-                                            class="text-primary" title="Print Barcode">
-                                            <i class="bi bi-upc-scan" style="font-size: 1rem;"></i>
+                                            class="btn btn-primary btn-sm me-1">
+                                            Barcode
                                         </a>
+                                        <button class="btn btn-info btn-sm open-modal"
+                                            data-url="{{ route('products.show', $product->id) }}"
+                                            data-title="Product #{{ $product->product_code }}" title="View Details">
+                                            View
+                                        </button>
                                     </td>
-
-
                                 </tr>
                             @empty
                                 <tr>
