@@ -9,13 +9,23 @@ use App\Models\Order;
 use App\Models\OrderDetail;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
 class OrderController extends Controller
 {
     public function index()
     {
-        $orders = Order::with(['customer', 'orderDetails'])->get();
+        $orders = Order::with([
+            'customer:id,name,mobile_no',
+            'branch:id,branch_name,branch_code',
+            'orderDetails:id,order_id,product_id,quantity,selling_price,color,size',
+            'orderDetails.product:id,product_name,product_code'
+        ])
+        ->select('id', 'branch_id', 'customer_id', 'customer_name', 'customer_mobile', 'total_price', 'created_at')
+        ->orderBy('id', 'desc')
+        ->get();
+
         return view('admin.order.index', compact('orders'));
     }
     public function create()
@@ -70,14 +80,18 @@ class OrderController extends Controller
 
     public function store(Request $request)
     {
+        $branchId = Auth::user()->branch_id  ?? null;
+
         if ($request->customer_id) {
             $order = Order::create([
                 'customer_id' => $request->customer_id,
+                'branch_id'   => $branchId,
                 'total_price' => 0,
             ]);
         } else {
             $order = Order::create([
                 'customer_id'     => null,
+                'branch_id'       => $branchId,
                 'customer_name'   => $request->customer_name,
                 'customer_mobile' => $request->customer_mobile,
                 'total_price'     => 0,

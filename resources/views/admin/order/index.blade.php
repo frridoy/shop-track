@@ -19,7 +19,8 @@
                             <tr>
                                 <th>#</th>
                                 <th>Order ID</th>
-                                <th>Customer Name</th>
+                                <th>Branch</th>
+                                <th>Customer</th>
                                 <th>Contact</th>
                                 <th>Products</th>
                                 <th>Total Price</th>
@@ -33,6 +34,10 @@
                                 <tr>
                                     <td>{{ $loop->iteration }}</td>
                                     <td>{{ $order->id }}</td>
+                                    <td>{{ $order->branch->branch_name ?? 'N/A' }}
+                                        <br>
+                                        <i>{{ $order->branch->branch_code ?? 'N/A' }}</i>
+                                    </td>
                                     <td>{{ $order->customer->name ?? $order->customer_name }}</td>
                                     <td>{{ $order->customer->mobile_no ?? $order->customer_mobile }}</td>
                                     <td class="text-center">
