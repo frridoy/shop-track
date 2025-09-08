@@ -18,5 +18,8 @@ Route::group(
         Route::get('products/by-code/{code}', [OrderController::class, 'getProductByBarcode'])
             ->where('code', '.*')
             ->name('products.byCode');
+
+        Route::get('show/{orderId}', [OrderController::class, 'show'])->name('show');
+
     }
 );

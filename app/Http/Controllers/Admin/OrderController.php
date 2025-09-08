@@ -22,9 +22,9 @@ class OrderController extends Controller
             'orderDetails:id,order_id,product_id,quantity,selling_price,color,size',
             'orderDetails.product:id,product_name,product_code'
         ])
-        ->select('id', 'branch_id', 'customer_id', 'customer_name', 'customer_mobile', 'total_price', 'created_at')
-        ->orderBy('id', 'desc')
-        ->get();
+            ->select('id', 'branch_id', 'customer_id', 'customer_name', 'customer_mobile', 'total_price', 'created_at')
+            ->orderBy('id', 'desc')
+            ->get();
 
         return view('admin.order.index', compact('orders'));
     }
@@ -122,5 +122,19 @@ class OrderController extends Controller
             'success' => true,
             'message' => 'Order created successfully!',
         ]);
+    }
+
+    public function show($id)
+    {
+        $order = Order::with([
+            'customer:id,name,mobile_no',
+            'branch:id,branch_name,branch_code',
+            'orderDetails:id,order_id,product_id,quantity,selling_price,color,size',
+            'orderDetails.product:id,product_name,product_code'
+        ])
+            ->select('id', 'branch_id', 'customer_id', 'customer_name', 'customer_mobile', 'total_price', 'created_at')
+            ->findOrFail($id);
+
+        return view('admin.order.show', compact('order'));
     }
 }
