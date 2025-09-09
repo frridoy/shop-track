@@ -17,5 +17,6 @@ require __DIR__ . '/lookup.php';
 require __DIR__ . '/branch.php';
 require __DIR__ . '/user.php';
 require __DIR__ . '/product.php';
+require __DIR__ . '/product-low-stock.php';
 require __DIR__ . '/customer.php';
 require __DIR__ . '/order.php';
