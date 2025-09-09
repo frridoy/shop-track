@@ -31,6 +31,21 @@ class Product extends Model
     {
         return $this->belongsTo(ProductType::class, 'product_type_id');
     }
+    public function orderDetails()
+    {
+        return $this->hasMany(OrderDetail::class);
+    }
 
-    
+    public function getRemainingQtyAttribute()
+    {
+        $sold = $this->orderDetails()->sum('quantity');
+        return $this->stock_qty - $sold;
+    }
+
+    public function scopeLowStock($query, $hold = 5)
+    {
+        return $query->withSum('orderDetails', 'quantity')
+            ->get()
+            ->filter(fn($product) => ($product->stock_qty - $product->order_details_sum_quantity) < $hold);
+    }
 }
