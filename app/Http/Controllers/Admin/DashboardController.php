@@ -13,7 +13,11 @@ class DashboardController extends Controller
     {
         $lowStockProducts = Product::lowStock()->take(5);
 
-        $recentOrders = Order::with('orderDetails.product', 'customer')
+        $recentOrders = Order::with([
+            'orderDetails.product:id,product_name',
+            'customer:id,name'
+        ])
+            ->select('id', 'customer_id', 'customer_name', 'total_price', 'created_at')
             ->orderBy('id', 'desc')
             ->take(5)
             ->get();

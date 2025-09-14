@@ -164,7 +164,7 @@
                 <div class="card shadow mb-4">
                     <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                         <h6 class="m-0 font-weight-bold text-primary">Recent Orders</h6>
-                        <a href="#" class="btn btn-sm btn-primary">View All</a>
+                        <a href="{{ route('orders.index') }}" class="btn btn-sm btn-primary">View All</a>
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
@@ -182,11 +182,15 @@
                                     @foreach ($recentOrders as $order)
                                         <tr>
                                             <td>#{{ $order->id }}</td>
-                                            <td>{{ $order->customer->name ?? '' }}</td>
-                                            <td>${{ number_format($order->total_price, 2) }}</td>
+                                            <td>{{ $order->customer->name ?? $order->customer_name }}</td>
+                                            <td>{{ number_format($order->total_price, 2) }} BDT</td>
                                             <td>{{ $order->created_at->format('Y-m-d') }}</td>
                                             <td>
-                                               
+                                                <button class="btn btn-info btn-sm open-modal"
+                                                    data-url="{{ route('orders.show', $order->id) }}"
+                                                    data-title="Order #{{ $order->id }}">
+                                                    View
+                                                </button>
                                             </td>
                                         </tr>
                                     @endforeach
