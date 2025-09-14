@@ -132,23 +132,23 @@
             <!-- Pie Chart -->
             <div class="col-xl-4 col-lg-5">
                 <div class="card shadow mb-4">
-                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                        <h6 class="m-0 font-weight-bold text-primary">Revenue Sources</h6>
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">Quick Actions</h6>
                     </div>
                     <div class="card-body">
-                        <div class="chart-pie pt-4 pb-2">
-                            <canvas id="revenueChart"></canvas>
-                        </div>
-                        <div class="mt-4 text-center small">
-                            <span class="mr-2">
-                                <i class="fas fa-circle text-primary"></i> Online Sales
-                            </span>
-                            <span class="mr-2">
-                                <i class="fas fa-circle text-success"></i> In-Store
-                            </span>
-                            <span class="mr-2">
-                                <i class="fas fa-circle text-info"></i> Wholesale
-                            </span>
+                        <div class="d-grid gap-2">
+                            <a href="{{ route('products.create') }}" class="btn btn-primary">
+                                <i class="fas fa-plus me-2"></i>Add New Product
+                            </a>
+                            <a href="{{ route('orders.create') }}" class="btn btn-success">
+                                <i class="fas fa-shopping-cart me-2"></i>Create Order
+                            </a>
+                            <a href="{{ route('customers.create') }}" class="btn btn-info">
+                                <i class="fas fa-users me-2"></i>Add Customer
+                            </a>
+                            <a href="#" class="btn btn-warning">
+                                <i class="fas fa-chart-bar me-2"></i>View Reports
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -171,7 +171,7 @@
                                     <tr>
                                         <th>Order ID</th>
                                         <th>Customer</th>
-                                        <th>Amount</th>
+                                        <th>Amount (BDT)</th>
                                         <th>Date</th>
                                         <th>Action</th>
                                     </tr>
@@ -181,7 +181,7 @@
                                         <tr>
                                             <td>#{{ $order->id }}</td>
                                             <td>{{ $order->customer->name ?? $order->customer_name }}</td>
-                                            <td>{{ number_format($order->total_price, 2) }} BDT</td>
+                                            <td>{{ number_format($order->total_price, 2) }}</td>
                                             <td>{{ $order->created_at->format('Y-m-d') }}</td>
                                             <td>
                                                 <button class="btn btn-info btn-sm open-modal"
@@ -199,49 +199,33 @@
                 </div>
             </div>
 
-
-            <!-- Low Stock Alerts -->
             <div class="col-lg-4 mb-4">
-
                 <div class="card shadow mb-4">
                     <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                         <h6 class="m-0 font-weight-bold text-danger">Low Stock Alerts</h6>
                         <a href="{{ route('product.lowStock') }}" class="btn btn-sm btn-danger">View All</a>
                     </div>
-                    @foreach ($lowStockProducts as $lowStockProduct)
-                        <div class="card-body">
-                            <div class="alert alert-warning d-flex align-items-center mb-2" role="alert">
-                                <i class="fas fa-exclamation-triangle me-2"></i>
-                                <div class="flex-grow-1">
-                                    <strong>{{ $lowStockProduct->product_name ?? '' }}</strong><br>
-                                    <small>Sold: {{ $lowStockProduct->order_details_sum_quantity ?? 0 }} (Available:
-                                        {{ $lowStockProduct->remaining_qty ?? 0 }})</small>
+
+                    <div id="lowStockSlider">
+                        @foreach ($lowStockProducts->chunk(2) as $chunkIndex => $chunk)
+                            <div class="low-stock-slide {{ $chunkIndex === 0 ? 'active' : 'd-none' }}">
+                                <div class="card-body py-2">
+                                    @foreach ($chunk as $lowStockProduct)
+                                        <div class="alert alert-warning d-flex align-items-center mb-2 py-2"
+                                            role="alert">
+                                            <i class="fas fa-exclamation-triangle me-2"></i>
+                                            <div class="flex-grow-1">
+                                                <strong>{{ $lowStockProduct->product_name ?? '' }}</strong><br>
+                                                <small>
+                                                    Sold: {{ $lowStockProduct->order_details_sum_quantity ?? 0 }}
+                                                    (Available: {{ $lowStockProduct->remaining_qty ?? 0 }})
+                                                </small>
+                                            </div>
+                                        </div>
+                                    @endforeach
                                 </div>
                             </div>
-                        </div>
-                    @endforeach
-                </div>
-
-                <!-- Quick Actions -->
-                <div class="card shadow mb-4">
-                    <div class="card-header py-3">
-                        <h6 class="m-0 font-weight-bold text-primary">Quick Actions</h6>
-                    </div>
-                    <div class="card-body">
-                        <div class="d-grid gap-2">
-                            <a href="#" class="btn btn-primary">
-                                <i class="fas fa-plus me-2"></i>Add New Product
-                            </a>
-                            <a href="#" class="btn btn-success">
-                                <i class="fas fa-shopping-cart me-2"></i>Create Order
-                            </a>
-                            <a href="#" class="btn btn-info">
-                                <i class="fas fa-users me-2"></i>Add Customer
-                            </a>
-                            <a href="#" class="btn btn-warning">
-                                <i class="fas fa-chart-bar me-2"></i>View Reports
-                            </a>
-                        </div>
+                        @endforeach
                     </div>
                 </div>
             </div>
@@ -399,6 +383,21 @@
             loadSalesData(this.value);
         });
 
+        //low stock product slider
+        document.addEventListener("DOMContentLoaded", function() {
+            const slides = document.querySelectorAll("#lowStockSlider .low-stock-slide");
+            let current = 0;
+
+            setInterval(() => {
+                slides[current].classList.add("d-none");
+                slides[current].classList.remove("active");
+
+                current = (current + 1) % slides.length;
+
+                slides[current].classList.remove("d-none");
+                slides[current].classList.add("active");
+            }, 2000);
+        });
 
         // Revenue Chart
         const revenueCtx = document.getElementById('revenueChart').getContext('2d');
