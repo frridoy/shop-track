@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Route;
 Route::group(
     [
         'prefix' => 'product-low-stock/',
-        'as'     => 'product-low-stock.',
+        'as'     => 'product.',
         'middleware' => ['auth'],
     ],
     function () {

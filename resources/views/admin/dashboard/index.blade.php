@@ -173,102 +173,51 @@
                                     <tr>
                                         <th>Order ID</th>
                                         <th>Customer</th>
-                                        <th>Status</th>
                                         <th>Amount</th>
                                         <th>Date</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <td>#12345</td>
-                                        <td>John Doe</td>
-                                        <td><span class="badge bg-warning">Pending</span></td>
-                                        <td>$299.99</td>
-                                        <td>2024-01-15</td>
-                                        <td><a href="#" class="btn btn-sm btn-primary">View</a></td>
-                                    </tr>
-                                    <tr>
-                                        <td>#12344</td>
-                                        <td>Jane Smith</td>
-                                        <td><span class="badge bg-success">Completed</span></td>
-                                        <td>$149.50</td>
-                                        <td>2024-01-15</td>
-                                        <td><a href="#" class="btn btn-sm btn-primary">View</a></td>
-                                    </tr>
-                                    <tr>
-                                        <td>#12343</td>
-                                        <td>Bob Johnson</td>
-                                        <td><span class="badge bg-info">Processing</span></td>
-                                        <td>$89.99</td>
-                                        <td>2024-01-14</td>
-                                        <td><a href="#" class="btn btn-sm btn-primary">View</a></td>
-                                    </tr>
-                                    <tr>
-                                        <td>#12342</td>
-                                        <td>Alice Brown</td>
-                                        <td><span class="badge bg-primary">Shipped</span></td>
-                                        <td>$199.99</td>
-                                        <td>2024-01-14</td>
-                                        <td><a href="#" class="btn btn-sm btn-primary">View</a></td>
-                                    </tr>
-                                    <tr>
-                                        <td>#12341</td>
-                                        <td>Mike Wilson</td>
-                                        <td><span class="badge bg-success">Completed</span></td>
-                                        <td>$349.99</td>
-                                        <td>2024-01-13</td>
-                                        <td><a href="#" class="btn btn-sm btn-primary">View</a></td>
-                                    </tr>
+                                    @foreach ($recentOrders as $order)
+                                        <tr>
+                                            <td>#{{ $order->id }}</td>
+                                            <td>{{ $order->customer->name ?? '' }}</td>
+                                            <td>${{ number_format($order->total_price, 2) }}</td>
+                                            <td>{{ $order->created_at->format('Y-m-d') }}</td>
+                                            <td>
+                                               
+                                            </td>
+                                        </tr>
+                                    @endforeach
                                 </tbody>
-
                             </table>
                         </div>
                     </div>
                 </div>
             </div>
 
+
             <!-- Low Stock Alerts -->
             <div class="col-lg-4 mb-4">
+
                 <div class="card shadow mb-4">
                     <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                         <h6 class="m-0 font-weight-bold text-danger">Low Stock Alerts</h6>
-                        <a href="#" class="btn btn-sm btn-danger">View All</a>
+                        <a href="{{ route('product.lowStock') }}" class="btn btn-sm btn-danger">View All</a>
                     </div>
-                    <div class="card-body">
-                        <div class="alert alert-warning d-flex align-items-center mb-2" role="alert">
-                            <i class="fas fa-exclamation-triangle me-2"></i>
-                            <div class="flex-grow-1">
-                                <strong>iPhone 15 Pro</strong><br>
-                                <small>Stock: 2 (Min: 10)</small>
+                    @foreach ($lowStockProducts as $lowStockProduct)
+                        <div class="card-body">
+                            <div class="alert alert-warning d-flex align-items-center mb-2" role="alert">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                <div class="flex-grow-1">
+                                    <strong>{{ $lowStockProduct->product_name ?? '' }}</strong><br>
+                                    <small>Sold: {{ $lowStockProduct->order_details_sum_quantity ?? 0 }} (Available:
+                                        {{ $lowStockProduct->remaining_qty ?? 0 }})</small>
+                                </div>
                             </div>
                         </div>
-
-                        <div class="alert alert-warning d-flex align-items-center mb-2" role="alert">
-                            <i class="fas fa-exclamation-triangle me-2"></i>
-                            <div class="flex-grow-1">
-                                <strong>Samsung Galaxy S24</strong><br>
-                                <small>Stock: 3 (Min: 15)</small>
-                            </div>
-                        </div>
-
-                        <div class="alert alert-warning d-flex align-items-center mb-2" role="alert">
-                            <i class="fas fa-exclamation-triangle me-2"></i>
-                            <div class="flex-grow-1">
-                                <strong>MacBook Pro 16"</strong><br>
-                                <small>Stock: 1 (Min: 5)</small>
-                            </div>
-                        </div>
-
-                        <div class="alert alert-warning d-flex align-items-center mb-2" role="alert">
-                            <i class="fas fa-exclamation-triangle me-2"></i>
-                            <div class="flex-grow-1">
-                                <strong>AirPods Pro 2</strong><br>
-                                <small>Stock: 4 (Min: 20)</small>
-                            </div>
-                        </div>
-
-                    </div>
+                    @endforeach
                 </div>
 
                 <!-- Quick Actions -->
