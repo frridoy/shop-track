@@ -17,14 +17,14 @@
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
                                 <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                    Total Sales (Monthly)
+                                    Total Sales ({{ now()->format('F Y') }})
                                 </div>
                                 <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                    1000
+                                    {{ $totalSalesMonthly ?? 0 }}
                                 </div>
                             </div>
                             <div class="col-auto">
-                                <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                                <i class="fas fa-taka-sign fa-2x text-gray-300"></i>
                             </div>
                         </div>
                     </div>
@@ -40,7 +40,7 @@
                                     Total Orders
                                 </div>
                                 <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                    1250
+                                    {{ $totalOrders ?? 0 }}
                                 </div>
                             </div>
                             <div class="col-auto">
@@ -62,7 +62,7 @@
                                 <div class="row no-gutters align-items-center">
                                     <div class="col-auto">
                                         <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">
-                                            1500
+                                            {{ $productsInStock ?? 0 }}
                                         </div>
                                     </div>
                                     <div class="col">
@@ -88,14 +88,14 @@
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
                                 <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                    Pending Orders
+                                    Registered Customers
                                 </div>
                                 <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                    2000
+                                    {{ $registeredCustomers ?? 0 }}
                                 </div>
                             </div>
                             <div class="col-auto">
-                                <i class="fas fa-clock fa-2x text-gray-300"></i>
+                                <i class="fas fa-users fa-2x text-gray-300"></i>
                             </div>
                         </div>
                     </div>
@@ -105,27 +105,25 @@
 
         <!-- Charts Row -->
         <div class="row mb-4">
-            <!-- Sales Chart -->
             <div class="col-xl-8 col-lg-7">
                 <div class="card shadow mb-4">
                     <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                         <h6 class="m-0 font-weight-bold text-primary">Sales Overview</h6>
-                        <div class="dropdown no-arrow">
-                            <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
-                                data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
-                            </a>
-                            <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in">
-                                <a class="dropdown-item" href="#">This Month</a>
-                                <a class="dropdown-item" href="#">Last Month</a>
-                                <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="#">Custom Range</a>
-                            </div>
+
+                        <div class="dropdown no-arrow ms-3" style="margin-left: -10px;">
+                            <select id="salesYear" class="form-select form-select-sm">
+                                @foreach (range(date('Y'), 2025) as $year)
+                                    <option value="{{ $year }}" {{ $year == date('Y') ? 'selected' : '' }}>
+                                        {{ $year }}
+                                    </option>
+                                @endforeach
+                            </select>
                         </div>
                     </div>
+
                     <div class="card-body">
-                        <div class="chart-area">
-                            <canvas id="salesChart" width="100%" height="400"></canvas>
+                        <div class="chart-area" style="position: relative; height:400px;">
+                            <canvas id="salesChart"></canvas>
                         </div>
                     </div>
                 </div>
@@ -324,22 +322,26 @@
 @push('scripts')
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        // Sales Chart
-        const salesCtx = document.getElementById('salesChart').getContext('2d');
-        const salesChart = new Chart(salesCtx, {
+        const ctx = document.getElementById('salesChart').getContext('2d');
+
+        const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+        gradient.addColorStop(0, 'rgba(0, 123, 255, 0.4)');
+        gradient.addColorStop(1, 'rgba(0, 123, 255, 0.05)');
+
+        const salesChart = new Chart(ctx, {
             type: 'line',
             data: {
                 labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
                 datasets: [{
                     label: 'Sales',
-                    data: [10000, 15000, 12000, 18000, 16000, 22000, 25000, 23000, 28000, 30000, 32000,
-                        35000
-                    ],
+                    data: [],
                     borderColor: '#007bff',
-                    backgroundColor: 'rgba(0, 123, 255, 0.1)',
+                    backgroundColor: gradient,
                     borderWidth: 3,
                     fill: true,
-                    tension: 0.4
+                    tension: 0.3,
+                    pointRadius: 4,
+                    pointBackgroundColor: '#007bff'
                 }]
             },
             options: {
@@ -348,20 +350,55 @@
                 plugins: {
                     legend: {
                         display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return '৳' + context.raw.toLocaleString();
+                            }
+                        }
                     }
                 },
                 scales: {
                     y: {
                         beginAtZero: true,
                         ticks: {
-                            callback: function(value) {
-                                return '$' + value.toLocaleString();
-                            }
+                            callback: value => '৳' + value.toLocaleString()
+                        },
+                        grid: {
+                            color: 'rgba(0,0,0,0.05)',
+                            drawBorder: false
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
                         }
                     }
                 }
             }
         });
+
+        const currentYear = new Date().getFullYear();
+        document.getElementById('salesYear').value = currentYear;
+
+        function loadSalesData(year) {
+            const url = "{{ route('admin.sales-data', ':year') }}".replace(':year', year);
+
+            fetch(url)
+                .then(res => res.json())
+                .then(data => {
+                    salesChart.data.datasets[0].data = data;
+                    salesChart.update();
+                });
+        }
+
+        loadSalesData(currentYear);
+
+        document.getElementById('salesYear').addEventListener('change', function() {
+            loadSalesData(this.value);
+        });
+
 
         // Revenue Chart
         const revenueCtx = document.getElementById('revenueChart').getContext('2d');
