@@ -17,6 +17,7 @@ class Product extends Model
         'color',
         'size',
         'stock_qty',
+        'sold_qty',
         'purchase_price',
         'selling_price',
         'bottom_price',
