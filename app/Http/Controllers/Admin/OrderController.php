@@ -37,23 +37,23 @@ class OrderController extends Controller
     public function getProductByBarcode($code)
     {
         try {
-            Log::info('Scanned barcode: ' . $code);
             $decodedCode = urldecode($code);
-            Log::info('Decoded barcode: ' . $decodedCode);
 
             $product = Product::where('product_code', $decodedCode)
                 ->orWhere('product_code', $code)
                 ->first();
 
             if (!$product) {
-                Log::warning('Product not found for barcode: ' . $code);
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Product not found for barcode: ' . $code
-                ], 404);
+                return response()->json(['success' => false, 'message' => 'Product not found'], 404);
             }
 
-            Log::info('Product found: ' . $product->product_name);
+            if ($product->is_active == 0) {
+                return response()->json(['success' => false, 'message' => 'Product is reserved'], 403);
+            }
+
+            if ($product->stock_qty <= 0) {
+                return response()->json(['success' => false, 'message' => 'Product is out of stock'], 403);
+            }
 
             $colorName = Lookup::where('id', $product->color)->value('lookup_name');
             $sizeName = Lookup::where('id', $product->size)->value('lookup_name');
@@ -66,21 +66,31 @@ class OrderController extends Controller
                     'color' => $colorName,
                     'size'  => $sizeName,
                     'price' => (float) $product->selling_price,
-                    'stock' => $product->stock_quantity ?? 0,
+                    'stock' => $product->stock_qty,
                 ]
             ]);
         } catch (\Exception $e) {
             Log::error('Error fetching product by barcode: ' . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'message' => 'Server error occurred while fetching product'
-            ], 500);
+            return response()->json(['success' => false, 'message' => 'Server error'], 500);
         }
     }
 
     public function store(Request $request)
     {
-        $branchId = Auth::user()->branch_id  ?? null;
+        $branchId = Auth::user()->branch_id ?? null;
+
+        foreach ($request->products as $p) {
+            $product = Product::find($p['id']);
+            if (!$product) {
+                return response()->json(['success' => false, 'message' => 'Product not found']);
+            }
+            if ($product->is_active == 0) {
+                return response()->json(['success' => false, 'message' => $product->product_name . ' is reserved']);
+            }
+            if ($p['qty'] > $product->stock_qty) {
+                return response()->json(['success' => false, 'message' => 'Quantity for ' . $product->product_name . ' exceeds available stock']);
+            }
+        }
 
         if ($request->customer_id) {
             $order = Order::create([
@@ -100,28 +110,28 @@ class OrderController extends Controller
 
         $orderTotal = 0;
 
-        foreach ($request->products as $product) {
-            $lineTotal = $product['price'] * $product['qty'];
+        foreach ($request->products as $productData) {
+            $lineTotal = $productData['price'] * $productData['qty'];
 
             OrderDetail::create([
                 'order_id'      => $order->id,
-                'product_id'    => $product['id'],
-                'selling_price' => $product['price'],
-                'quantity'      => $product['qty'],
-                'color'         => $product['color'] ?? null,
-                'size'          => $product['size'] ?? null,
+                'product_id'    => $productData['id'],
+                'selling_price' => $productData['price'],
+                'quantity'      => $productData['qty'],
+                'color'         => $productData['color'] ?? null,
+                'size'          => $productData['size'] ?? null,
                 'total_price'   => $lineTotal,
             ]);
+
+            Product::where('id', $productData['id'])->increment('sold_qty', $productData['qty']);
+            Product::where('id', $productData['id'])->decrement('stock_qty', $productData['qty']);
 
             $orderTotal += $lineTotal;
         }
 
         $order->update(['total_price' => $orderTotal]);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Order created successfully!',
-        ]);
+        return response()->json(['success' => true, 'message' => 'Order created successfully']);
     }
 
     public function show($id)
