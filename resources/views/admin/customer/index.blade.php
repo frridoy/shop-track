@@ -43,8 +43,11 @@
                                     <td>{{ $customer->address ?? '' }}</td>
                                     <td>{{ $customer->is_active == 1 ? 'Active' : 'Inactive' }}</td>
                                     <td>
-                                        <a href="{{ route('customers.edit', $customer->id) }}"
-                                            class="btn btn-sm btn-primary">Edit</a>
+                                        <button class="btn btn-info btn-sm open-modal"
+                                            data-url="{{ route('customers.edit', $customer->id) }}"
+                                            data-title="Edit Customer: {{ $customer->name }}" title="Edit Customer">
+                                            Edit
+                                        </button>
                                     </td>
                                 </tr>
                             @empty

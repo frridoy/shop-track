@@ -43,12 +43,48 @@ class CustomerContoller extends Controller
             'created_by'   => Auth::id(),
         ]);
 
-        if($customer){
+        if ($customer) {
             return response()->json([
                 'status' => 1,
                 'message' => 'Customer created successfully.',
-                'redirect' => route('customers.create')
+                'redirect' => route('customers.index')
             ]);
         }
+    }
+
+    public function edit($id)
+    {
+        $customer = Customer::findOrFail($id);
+        return view('admin.customer.edit', compact('customer'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $customer = Customer::findOrFail($id);
+
+        $request->validate([
+            'name'        => 'required|string|max:255',
+            'email'       => 'nullable|email|max:255|unique:customers,email,' . $customer->id,
+            'mobile_no'   => 'nullable|string|max:20',
+            'sex'         => 'nullable|in:Male,Female,Other',
+            'blood_group' => 'nullable|in:A+,A-,B+,B-,AB+,AB-,O+,O-',
+            'dob'         => 'nullable|date',
+            'address'     => 'nullable|string|max:500',
+            'is_active'   => 'required|boolean',
+        ]);
+
+        $customer->update([
+            'name'        => $request->input('name'),
+            'email'       => $request->input('email'),
+            'mobile_no'   => $request->input('mobile_no'),
+            'sex'         => $request->input('sex'),
+            'blood_group' => $request->input('blood_group'),
+            'dob'         => $request->input('dob'),
+            'address'     => $request->input('address'),
+            'is_active'   => $request->input('is_active'),
+        ]);
+
+        return redirect()->route('customers.index')
+            ->with('success', 'Customer updated successfully!');
     }
 }
