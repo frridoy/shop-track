@@ -17,7 +17,7 @@
                         <div class="col-md-4">
                             <label for="branch_id" class="form-label fw-bold">Branch <span
                                     class="text-danger">*</span></label>
-                            <select name="branch_id" id="branch_id" class="form-select form-select-sm" required>
+                            <select name="branch_id" id="branch_id" class="form-select form-select-sm">
                                 <option value="">Select Branch</option>
                                 @if ($branches->isEmpty())
                                     <option value="">No branches available</option>
@@ -32,14 +32,14 @@
                         <div class="col-md-4">
                             <label for="name" class="form-label fw-bold">Name <span class="text-danger">*</span></label>
                             <input type="text" name="name" id="name" class="form-control form-control-sm"
-                                placeholder="Enter full name" required>
+                                placeholder="Enter full name">
                             <span class="text-danger error-text name_error"></span>
                         </div>
 
                         <div class="col-md-4">
                             <label for="user_type" class="form-label fw-bold">User Type <span
                                     class="text-danger">*</span></label>
-                            <select name="user_type" id="user_type" class="form-select form-select-sm" required>
+                            <select name="user_type" id="user_type" class="form-select form-select-sm">
                                 <option value="1">Admin</option>
                                 <option value="2">Manager</option>
                                 <option value="3">Sales Person</option>
@@ -51,7 +51,7 @@
                             <label for="email" class="form-label fw-bold">Email <span
                                     class="text-danger">*</span></label>
                             <input type="email" name="email" id="email" class="form-control form-control-sm"
-                                placeholder="Enter email address" required>
+                                placeholder="Enter email address">
                             <span class="text-danger error-text email_error"></span>
                         </div>
 
@@ -59,7 +59,7 @@
                             <label for="password" class="form-label fw-bold">Password <span
                                     class="text-danger">*</span></label>
                             <input type="password" name="password" id="password" class="form-control form-control-sm"
-                                placeholder="Enter password" required>
+                                placeholder="Enter password">
                             <span class="text-danger error-text password_error"></span>
                         </div>
 
@@ -67,7 +67,7 @@
                             <label for="phone_no" class="form-label fw-bold">Phone Number <span
                                     class="text-danger">*</span></label>
                             <input type="number" name="phone_no" id="phone_no" class="form-control form-control-sm"
-                                placeholder="Enter phone number" required>
+                                placeholder="Enter phone number">
                             <span class="text-danger error-text phone_no_error"></span>
                         </div>
 
@@ -122,7 +122,7 @@
                             <label for="date_of_joining" class="form-label fw-bold">Date of Joining <span
                                     class="text-danger">*</span></label>
                             <input type="date" name="date_of_joining" id="date_of_joining"
-                                class="form-control form-control-sm" required>
+                                class="form-control form-control-sm">
                             <span class="text-danger error-text date_of_joining_error"></span>
                         </div>
 
@@ -136,7 +136,7 @@
                         <div class="col-md-4">
                             <label for="is_active" class="form-label fw-bold">Status <span
                                     class="text-danger">*</span></label>
-                            <select name="is_active" id="is_active" class="form-select form-select-sm" required>
+                            <select name="is_active" id="is_active" class="form-select form-select-sm">
                                 <option value="1">Active</option>
                                 <option value="0">Inactive</option>
                             </select>
@@ -155,41 +155,51 @@
 
     </div>
 
-    <script>
-        $(document).on('submit', '#userForm', function(e) {
-            e.preventDefault();
+    @push('scripts')
+        <script>
+            $(document).ready(function() {
+                $('#userForm').on('submit', function(e) {
+                    e.preventDefault();
 
-            let form = this;
-            let formData = new FormData(form);
+                    let form = this;
+                    let formData = new FormData(form);
 
-            $.ajax({
-                url: $(form).attr('action'),
-                method: $(form).attr('method'),
-                data: formData,
-                processData: false,
-                contentType: false,
-                dataType: 'json',
-                beforeSend: function() {
-                    $(form).find('span.error-text').text('');
-                },
-                success: function(data) {
-                    if (data.status == 1) {
-                        toastr.success(data.message);
-                        $(form)[0].reset();
-                        window.location.href = data.redirect;
-                    }
-                },
-                error: function(xhr) {
-                    if (xhr.status === 422) {
-                        let errors = xhr.responseJSON.errors;
-                        $.each(errors, function(prefix, val) {
-                            $(form).find('span.' + prefix + '_error').text(val[0]);
-                        });
-                    } else {
-                        toastr.error('Something went wrong!');
-                    }
-                }
+                    $.ajax({
+                        url: $(form).attr('action'),
+                        method: $(form).attr('method'),
+                        data: formData,
+                        processData: false,
+                        contentType: false,
+                        dataType: 'json',
+                        beforeSend: function() {
+                            $(form).find('span.error-text').text('');
+                            $(form).find('.is-invalid').removeClass('is-invalid');
+                        },
+                        success: function(data) {
+                            if (data.status == 1) {
+                                toastr.success(data.message);
+                                $(form)[0].reset();
+
+                                setTimeout(function() {
+                                    window.location.href = data.redirect;
+                                }, 1500);
+                            }
+                        },
+                        error: function(xhr) {
+                            if (xhr.status === 422) {
+                                let errors = xhr.responseJSON.errors;
+                                $.each(errors, function(key, val) {
+                                    let input = $(form).find('[name="' + key + '"]');
+                                    input.addClass('is-invalid');
+                                    $(form).find('span.' + key + '_error').text(val[0]);
+                                });
+                            } else {
+                                toastr.error('Something went wrong!');
+                            }
+                        }
+                    });
+                });
             });
-        });
-    </script>
+        </script>
+    @endpush
 @endsection
