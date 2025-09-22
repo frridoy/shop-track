@@ -21,11 +21,10 @@
                             <th>#</th>
                             <th>Product Name</th>
                             <th>Product Code</th>
-                            <th>Stock Qty</th>
+                            <th>First Stock Qty</th>
                             <th>Sold Qty</th>
                             <th>Remaining Qty</th>
                             <th>Selling Price</th>
-                            <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -34,11 +33,10 @@
                                 <td>{{ $loop->iteration }}</td>
                                 <td>{{ $product->product_name ?? '' }}</td>
                                 <td>{{ $product->product_code ?? '' }}</td>
-                                <td>{{ $product->stock_qty }}</td>
-                                <td>{{ $product->order_details_sum_quantity ?? $product->orderDetails->sum('quantity') }}</td>
-                                <td>{{ $product->remaining_qty }}</td>
-                                <td>{{ $product->selling_price }}</td>
-                                <td></td>
+                                <td>{{ $product->stock_qty + $product->sold_qty ?? '' }}</td>
+                                <td>{{ $product->sold_qty ?? ''}}</td>
+                                <td>{{ $product->stock_qty ?? ''}}</td>
+                                <td>{{ $product->selling_price ?? ''}}</td>
                             </tr>
                         @empty
                             <tr>
