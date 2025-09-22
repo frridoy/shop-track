@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('customer_id')->nullable()->constrained('customers')->onDelete('cascade');
             $table->foreignId('branch_id')->nullable()->constrained('branches')->onDelete('cascade');
+            $table->foreignId('seller_id')->nullable()->constrained('users')->onDelete('cascade');
             $table->string('customer_name')->nullable();
             $table->string('customer_mobile')->nullable();
             $table->decimal('total_price', 12, 2)->index()->default(0);

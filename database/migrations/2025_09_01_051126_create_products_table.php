@@ -19,7 +19,8 @@ return new class extends Migration
             $table->string('product_code', 50)->unique();
             $table->string('color', 50)->nullable();
             $table->string('size', 50)->nullable();
-            $table->decimal('stock_qty', 10, 2)->default(0);
+            $table->string('stock_qty', 20)->default(0);
+            $table->string('sold_qty', 20)->default(0);
             $table->decimal('purchase_price', 12, 2)->default(0);
             $table->decimal('selling_price', 12, 2)->default(0);
             $table->decimal('bottom_price', 12, 2)->default(0);

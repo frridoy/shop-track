@@ -69,7 +69,7 @@ class UserController extends Controller
             return response()->json([
                 'status' => 1,
                 'message' => 'User Created Successfully',
-                'redirect' => route('users.create')
+                'redirect' => route('users.index')
             ]);
         }
     }

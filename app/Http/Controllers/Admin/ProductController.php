@@ -50,7 +50,7 @@ class ProductController extends Controller
         $rules = [
             'product_type_id' => 'required|exists:product_types,id',
             'products' => 'required|array|min:1',
-            'products.*.product_name' => 'required|string|max:100|distinct',
+            // 'products.*.product_name' => 'required|string|max:100|distinct',
             'products.*.color' => 'nullable|numeric|exists:lookups,id',
             'products.*.size' => 'nullable|numeric|exists:lookups,id',
             'products.*.stock_qty' => 'required|numeric|min:0',
