@@ -217,8 +217,8 @@
                                             <div class="flex-grow-1">
                                                 <strong>{{ $lowStockProduct->product_name ?? '' }}</strong><br>
                                                 <small>
-                                                    Sold: {{ $lowStockProduct->order_details_sum_quantity ?? 0 }}
-                                                    (Available: {{ $lowStockProduct->remaining_qty ?? 0 }})
+                                                    Sold: {{ $lowStockProduct->sold_qty ?? 0 }}
+                                                    (Available: {{ $lowStockProduct->stock_qty ?? 0 }})
                                                 </small>
                                             </div>
                                         </div>

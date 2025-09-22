@@ -12,7 +12,7 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        $lowStockProducts = Product::lowStock()->take(5);
+        $lowStockProducts = Product::where('stock_qty', '<', 5)->get();
 
         $recentOrders = Order::with([
             'orderDetails.product:id,product_name',
