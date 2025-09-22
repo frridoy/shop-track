@@ -55,42 +55,54 @@
 
     </div>
 
+    @push('scripts')
     <script>
-        $(document).on('submit', '#lookupForm', function(e) {
-            e.preventDefault();
+        $(document).ready(function() {
 
-            let form = this;
-            let formData = new FormData(form);
+            $('#lookupForm').on('submit', function(e) {
+                e.preventDefault();
 
-            $.ajax({
-                url: $(form).attr('action'),
-                method: $(form).attr('method'),
-                data: formData,
-                processData: false,
-                contentType: false,
-                dataType: 'json',
-                beforeSend: function() {
-                    $(form).find('span.error-text').text('');
-                },
-                success: function(data) {
-                    if (data.status == 1) {
-                        toastr.success(data.message);
-                        $(form)[0].reset();
-                        window.location.href = data.redirect;
+                let form = this;
+                let formData = new FormData(form);
+
+                $.ajax({
+                    url: $(form).attr('action'),
+                    method: $(form).attr('method'),
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    dataType: 'json',
+                    beforeSend: function() {
+                        $(form).find('span.error-text').text('');
+                        $(form).find('.is-invalid').removeClass('is-invalid');
+                    },
+                    success: function(data) {
+                        if (data.status == 1) {
+                            toastr.success(data.message);
+                            $(form)[0].reset();
+
+                            setTimeout(function() {
+                                window.location.href = data.redirect;
+                            }, 1500);
+                        }
+                    },
+                    error: function(xhr) {
+                        if (xhr.status === 422) {
+                            let errors = xhr.responseJSON.errors;
+                            $.each(errors, function(key, val) {
+                                $(form).find('span.' + key + '_error').text(val[0]);
+                                $(form).find('[name="' + key + '"]').addClass(
+                                    'is-invalid');
+                            });
+                        } else {
+                            toastr.error('Something went wrong!');
+                        }
                     }
-                },
-                error: function(xhr) {
-                    if (xhr.status === 422) {
-                        let errors = xhr.responseJSON.errors;
-                        $.each(errors, function(prefix, val) {
-                            $(form).find('span.' + prefix + '_error').text(val[0]);
-                            $(form).find('[name="' + prefix + '"]').addClass('is-invalid');
-                        });
-                    } else {
-                        toastr.error('Something went wrong!');
-                    }
-                }
+                });
+
             });
+
         });
     </script>
+@endpush
 @endsection
