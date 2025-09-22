@@ -48,7 +48,7 @@
                                 <th>#</th>
                                 <th>Product Name</th>
                                 <th>Category</th>
-                                <th>Stock Qty</th>
+                                <th>Stock</th>
                                 <th>Price</th>
                                 <th>Status</th>
                                 <th>Actions</th>
@@ -60,11 +60,21 @@
                                     <td>{{ $products->firstItem() + $key }}</td>
                                     <td>{{ $product->product_name }}</td>
                                     <td>{{ $product->type->product_type_name ?? '-' }}</td>
-                                    <td>{{ number_format($product->stock_qty, '0') }}</td>
                                     <td>
-                                        Purchase: {{ number_format($product->purchase_price, '0') }}<br>
-                                        Selling: {{ number_format($product->selling_price, '0') }}<br>
-                                        Bottom: {{ number_format($product->bottom_price, '0') }}
+                                       @php
+                                       $sizeName = $productSize->where('id', $product->size)->first()->lookup_name ?? '-';
+                                       $colorName = $productColor->where('id', $product->color)->first()->lookup_name ??'-';
+                                       @endphp
+                                        <div>
+                                            <strong>Size:</strong> {{ $sizeName ?? '-' }} <br>
+                                            <strong>Stock:</strong> {{ number_format($product->stock_qty, 0) ?? '-' }} <br>
+                                            <strong>Color:</strong> {{ $colorName ?? '-' }}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <strong>Selling:</strong>: {{ number_format($product->selling_price, '0') }}<br>
+                                        <strong>Purchase:</strong> {{ number_format($product->purchase_price, '0') }}<br>
+                                        <strong>Bottom:</strong>: {{ number_format($product->bottom_price, '0') }}
                                     </td>
 
                                     <td>

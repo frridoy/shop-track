@@ -30,7 +30,10 @@ class ProductController extends Controller
         $productTypes = ProductType::where('is_active', 1)->get();
         $products = $query->orderBy('id', 'desc')->paginate(10)->withQueryString();
 
-        return view('admin.product.index', compact('products', 'productTypes'));
+        $productSize = Lookup::where('lookup_type', 1)->select('id', 'lookup_name')->get();
+        $productColor = Lookup::where('lookup_type', 2)->select('id', 'lookup_name')->get();
+
+        return view('admin.product.index', compact('products', 'productTypes', 'productSize', 'productColor'));
     }
 
     public function create()
