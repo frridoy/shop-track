@@ -3,30 +3,91 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Branch;
 use App\Models\Customer;
 use App\Models\Lookup;
 use App\Models\Order;
 use App\Models\OrderDetail;
 use App\Models\Product;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
 class OrderController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $orders = Order::with([
-            'customer:id,name,mobile_no',
+        $user = Auth::user();
+
+        $query = Order::with([
+            'customer:id,name,mobile_no,email',
             'branch:id,branch_name,branch_code',
+            'seller:id,name',
             'orderDetails:id,order_id,product_id,quantity,selling_price,color,size',
             'orderDetails.product:id,product_name,product_code'
-        ])
-            ->select('id', 'branch_id', 'customer_id', 'customer_name', 'customer_mobile', 'total_price', 'created_at')
-            ->orderBy('id', 'desc')
-            ->get();
+        ])->select('id', 'branch_id', 'customer_id', 'customer_name', 'customer_mobile', 'total_price', 'created_at', 'seller_id');
 
-        return view('admin.order.index', compact('orders'));
+        if ($user->user_type == 2) {
+            $query->where('branch_id', $user->branch_id);
+        } elseif ($user->user_type == 3) {
+            $query->where('seller_id', $user->id);
+        }
+
+        if ($request->filled('customer_name')) {
+            $query->whereHas('customer', function ($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->customer_name . '%');
+            });
+        }
+
+        if ($request->filled('customer_email')) {
+            $query->whereHas('customer', function ($q) use ($request) {
+                $q->where('email', 'like', '%' . $request->customer_email . '%');
+            });
+        }
+
+        if ($request->filled('customer_mobile')) {
+            $query->whereHas('customer', function ($q) use ($request) {
+                $q->where('mobile_no', 'like', '%' . $request->customer_mobile . '%');
+            });
+        }
+
+        if ($request->filled('branch_id')) {
+            $query->where('branch_id', $request->branch_id);
+        }
+
+        if ($request->filled('from_date')) {
+            $query->whereDate('created_at', '>=', $request->from_date);
+        }
+
+        if ($request->filled('to_date')) {
+            $query->whereDate('created_at', '<=', $request->to_date);
+        }
+
+        if ($request->filled('seller_id')) {
+            $query->where('seller_id', $request->seller_id);
+        }
+
+        if ($user->user_type == 1) {
+            $sellers = User::where('user_type', 3)->select('id', 'name')->get();
+        }
+        elseif ($user->user_type == 2) {
+            $sellers = User::where('user_type', 3)
+                ->where('branch_id', $user->branch_id)
+                ->select('id', 'name')
+                ->get();
+        }
+        else {
+            $sellers = collect();
+        }
+
+        $orders = $query->orderBy('id', 'desc')->get();
+
+        $totalAmount = $orders->sum('total_price');
+
+        $branches = Branch::select('id', 'branch_name')->get();
+
+        return view('admin.order.index', compact('orders', 'branches', 'totalAmount', 'sellers'));
     }
     public function create()
     {
@@ -97,6 +158,7 @@ class OrderController extends Controller
                 'customer_id' => $request->customer_id,
                 'branch_id'   => $branchId,
                 'total_price' => 0,
+                'seller_id'    => Auth::user()->id
             ]);
         } else {
             $order = Order::create([
@@ -105,6 +167,7 @@ class OrderController extends Controller
                 'customer_name'   => $request->customer_name,
                 'customer_mobile' => $request->customer_mobile,
                 'total_price'     => 0,
+                'seller_id'    => Auth::user()->id
             ]);
         }
 
@@ -121,7 +184,6 @@ class OrderController extends Controller
                 'color'         => $productData['color'] ?? null,
                 'size'          => $productData['size'] ?? null,
                 'total_price'   => $lineTotal,
-                'selller_id'    => Auth::user()->id
             ]);
 
             Product::where('id', $productData['id'])->increment('sold_qty', $productData['qty']);
