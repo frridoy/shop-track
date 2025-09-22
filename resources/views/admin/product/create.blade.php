@@ -8,43 +8,116 @@
         <form action="{{ route('products.store') }}" method="POST">
             @csrf
 
-            <div class="mb-3">
-                <label class="form-label fw-bold">Product Type <span class="text-danger">*</span></label>
-                <select name="product_type_id" class="form-select form-select-sm">
-                    <option value="">Select Product Type</option>
-                    @foreach ($productTypes as $type)
-                        <option value="{{ $type->id }}" {{ old('product_type_id') == $type->id ? 'selected' : '' }}>
-                            {{ $type->product_type_name }}</option>
-                    @endforeach
-                </select>
-                @error('product_type_id')
-                    <span class="text-danger small">{{ $message }}</span>
-                @enderror
+            <div class="card border rounded shadow-sm p-3 mb-4 bg-light">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Product Type <span class="text-danger">*</span></label>
+                        <select name="product_type_id" class="form-select form-select-sm">
+                            <option value="">Select Product Type</option>
+                            @foreach ($productTypes as $type)
+                                <option value="{{ $type->id }}"
+                                    {{ old('product_type_id') == $type->id ? 'selected' : '' }}>
+                                    {{ $type->product_type_name }}
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('product_type_id')
+                            <span class="text-danger small">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Product Name <span class="text-danger">*</span></label>
+                        <input type="text" name="product_name" class="form-control form-control-sm"
+                            value="{{ old('product_name') }}">
+                        @error('product_name')
+                            <span class="text-danger small">{{ $message }}</span>
+                        @enderror
+                    </div>
+                </div>
             </div>
 
             <div id="products-wrapper">
-                @php
-                    $oldProducts = old('products', [0 => []]);
-                @endphp
+                @php $oldProducts = old('products', [0 => []]); @endphp
 
                 @foreach ($oldProducts as $i => $oldProduct)
-                    <div class="product-card border rounded shadow-sm p-3 mb-4 bg-light">
+                    <div class="product-card card border rounded shadow-sm p-3 mb-4 bg-light">
                         <div class="d-flex justify-content-between align-items-center mb-2">
                             <h6 class="fw-bold mb-0">Product {{ $i + 1 }}</h6>
                             <button type="button" class="btn btn-outline-danger btn-sm remove-card">× Remove</button>
                         </div>
-                        <div class="row g-3">
-
-                            <div class="col-md-6">
-                                <label class="form-label">Product Name <span class="text-danger">*</span></label>
-                                <input type="text" name="products[{{ $i }}][product_name]"
-                                    class="form-control form-control-sm" value="{{ $oldProduct['product_name'] ?? '' }}">
-                                @error("products.$i.product_name")
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-2">
+                                <label class="form-label">Color</label>
+                                <select name="products[{{ $i }}][color]" class="form-select form-select-sm">
+                                    <option value="">Select</option>
+                                    @foreach ($colors as $color)
+                                        <option value="{{ $color->id }}"
+                                            {{ isset($oldProduct['color']) && $oldProduct['color'] == $color->id ? 'selected' : '' }}>
+                                            {{ $color->lookup_name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error("products.$i.color")
                                     <span class="text-danger small">{{ $message }}</span>
                                 @enderror
                             </div>
 
-                            <div class="col-md-6">
+                            <div class="col-md-2">
+                                <label class="form-label">Size</label>
+                                <select name="products[{{ $i }}][size]" class="form-select form-select-sm">
+                                    <option value="">Select</option>
+                                    @foreach ($sizes as $size)
+                                        <option value="{{ $size->id }}"
+                                            {{ isset($oldProduct['size']) && $oldProduct['size'] == $size->id ? 'selected' : '' }}>
+                                            {{ $size->lookup_name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error("products.$i.size")
+                                    <span class="text-danger small">{{ $message }}</span>
+                                @enderror
+                            </div>
+
+                            <div class="col-md-2">
+                                <label class="form-label">Stock Qty</label>
+                                <input type="number" step="0.01" name="products[{{ $i }}][stock_qty]"
+                                    class="form-control form-control-sm" value="{{ $oldProduct['stock_qty'] ?? 0 }}">
+                                @error("products.$i.stock_qty")
+                                    <span class="text-danger small">{{ $message }}</span>
+                                @enderror
+                            </div>
+
+                            <div class="col-md-2">
+                                <label class="form-label">Purchase Price</label>
+                                <input type="number" step="0.01" name="products[{{ $i }}][purchase_price]"
+                                    class="form-control form-control-sm" value="{{ $oldProduct['purchase_price'] ?? 0 }}">
+                                @error("products.$i.purchase_price")
+                                    <span class="text-danger small">{{ $message }}</span>
+                                @enderror
+                            </div>
+
+                            <div class="col-md-2">
+                                <label class="form-label">Selling Price</label>
+                                <input type="number" step="0.01" name="products[{{ $i }}][selling_price]"
+                                    class="form-control form-control-sm" value="{{ $oldProduct['selling_price'] ?? 0 }}">
+                                @error("products.$i.selling_price")
+                                    <span class="text-danger small">{{ $message }}</span>
+                                @enderror
+                            </div>
+
+                            <div class="col-md-2">
+                                <label class="form-label">Bottom Price</label>
+                                <input type="number" step="0.01" name="products[{{ $i }}][bottom_price]"
+                                    class="form-control form-control-sm" value="{{ $oldProduct['bottom_price'] ?? 0 }}">
+                                @error("products.$i.bottom_price")
+                                    <span class="text-danger small">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-md-10">
                                 <label class="form-label">Remarks</label>
                                 <input type="text" name="products[{{ $i }}][remarks]"
                                     class="form-control form-control-sm" value="{{ $oldProduct['remarks'] ?? '' }}">
@@ -53,38 +126,8 @@
                                 @enderror
                             </div>
 
-                            <div class="col-md-4">
-                                <label class="form-label">Color</label>
-                                <select name="products[{{ $i }}][color]" class="form-select form-select-sm">
-                                    <option value="">Select</option>
-                                    @foreach ($colors as $color)
-                                        <option value="{{ $color->id }}"
-                                            {{ isset($oldProduct['color']) && $oldProduct['color'] == $color->id ? 'selected' : '' }}>
-                                            {{ $color->lookup_name }}</option>
-                                    @endforeach
-                                </select>
-                                @error("products.$i.color")
-                                    <span class="text-danger small">{{ $message }}</span>
-                                @enderror
-                            </div>
-
-                            <div class="col-md-4">
-                                <label class="form-label">Size</label>
-                                <select name="products[{{ $i }}][size]" class="form-select form-select-sm">
-                                    <option value="">Select</option>
-                                    @foreach ($sizes as $size)
-                                        <option value="{{ $size->id }}"
-                                            {{ isset($oldProduct['size']) && $oldProduct['size'] == $size->id ? 'selected' : '' }}>
-                                            {{ $size->lookup_name }}</option>
-                                    @endforeach
-                                </select>
-                                @error("products.$i.size")
-                                    <span class="text-danger small">{{ $message }}</span>
-                                @enderror
-                            </div>
-
-                            <div class="col-md-4">
-                                <label class="form-label">Status <span class="text-danger">*</span></label>
+                            <div class="col-md-2">
+                                <label class="form-label">Status</label>
                                 <select name="products[{{ $i }}][is_active]" class="form-select form-select-sm">
                                     <option value="1"
                                         {{ isset($oldProduct['is_active']) && $oldProduct['is_active'] == 1 ? 'selected' : '' }}>
@@ -97,44 +140,8 @@
                                     <span class="text-danger small">{{ $message }}</span>
                                 @enderror
                             </div>
-
-                            <div class="col-md-3">
-                                <label class="form-label">Stock Qty <span class="text-danger">*</span></label>
-                                <input type="number" step="0.01" name="products[{{ $i }}][stock_qty]"
-                                    class="form-control form-control-sm" value="{{ $oldProduct['stock_qty'] ?? 0 }}">
-                                @error("products.$i.stock_qty")
-                                    <span class="text-danger small">{{ $message }}</span>
-                                @enderror
-                            </div>
-
-                            <div class="col-md-3">
-                                <label class="form-label">Purchase Price <span class="text-danger">*</span></label>
-                                <input type="number" step="0.01" name="products[{{ $i }}][purchase_price]"
-                                    class="form-control form-control-sm" value="{{ $oldProduct['purchase_price'] ?? 0 }}">
-                                @error("products.$i.purchase_price")
-                                    <span class="text-danger small">{{ $message }}</span>
-                                @enderror
-                            </div>
-
-                            <div class="col-md-3">
-                                <label class="form-label">Selling Price <span class="text-danger">*</span></label>
-                                <input type="number" step="0.01" name="products[{{ $i }}][selling_price]"
-                                    class="form-control form-control-sm" value="{{ $oldProduct['selling_price'] ?? 0 }}">
-                                @error("products.$i.selling_price")
-                                    <span class="text-danger small">{{ $message }}</span>
-                                @enderror
-                            </div>
-
-                            <div class="col-md-3">
-                                <label class="form-label">Bottom Price <span class="text-danger">*</span></label>
-                                <input type="number" step="0.01" name="products[{{ $i }}][bottom_price]"
-                                    class="form-control form-control-sm" value="{{ $oldProduct['bottom_price'] ?? 0 }}">
-                                @error("products.$i.bottom_price")
-                                    <span class="text-danger small">{{ $message }}</span>
-                                @enderror
-                            </div>
-
                         </div>
+
                     </div>
                 @endforeach
             </div>

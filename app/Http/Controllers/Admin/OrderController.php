@@ -121,6 +121,7 @@ class OrderController extends Controller
                 'color'         => $productData['color'] ?? null,
                 'size'          => $productData['size'] ?? null,
                 'total_price'   => $lineTotal,
+                'selller_id'    => Auth::user()->id
             ]);
 
             Product::where('id', $productData['id'])->increment('sold_qty', $productData['qty']);

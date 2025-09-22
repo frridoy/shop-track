@@ -76,6 +76,7 @@ class ProductController extends Controller
         $request->validate($rules, $messages);
 
         $productTypeId = $request->product_type_id;
+        $productName = $request->product_name;
         $productsData = $request->products;
         $createdBy = Auth::id();
 
@@ -107,7 +108,7 @@ class ProductController extends Controller
 
             $createdProduct = Product::create([
                 'product_type_id' => $productTypeId,
-                'product_name' => $product['product_name'],
+                'product_name' =>  $productName,
                 'entry_no' => Product::max('entry_no') + 1,
                 'color' => $product['color'] ?? null,
                 'size' => $product['size'] ?? null,
