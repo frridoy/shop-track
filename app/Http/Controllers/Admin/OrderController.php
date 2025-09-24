@@ -86,7 +86,7 @@ class OrderController extends Controller
 
         $totalAmount = $orders->sum('total_price');
 
-        $branches = Branch::select('id', 'branch_name')->get();
+        $branches = Branch::where('is_active', 1)->select('id', 'branch_name')->get();
 
         return view('admin.order.index', compact('orders', 'branches', 'totalAmount', 'sellers'));
     }

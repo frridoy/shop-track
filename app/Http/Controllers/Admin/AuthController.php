@@ -21,7 +21,7 @@ class AuthController extends Controller
             'password' => 'required'
         ]);
 
-        $inactiveUser= User::where('email', $request->email)->where('is_active', 0)->first();
+        $inactiveUser = User::where('email', $request->email)->where('is_active', 0)->first();
 
         if ($inactiveUser) {
             return back()->withErrors([
