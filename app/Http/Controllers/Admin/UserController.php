@@ -79,5 +79,7 @@ class UserController extends Controller
         return view('admin.user-registration.edit', compact('id'));
     }
 
-    public function update(Request $request, $id) {}
+    public function update(Request $request, $id) {
+        
+    }
 }

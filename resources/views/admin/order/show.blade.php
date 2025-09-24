@@ -3,10 +3,12 @@
     <div class="mb-4 border-bottom pb-2">
         <h4 class="fw-bold mb-1">Order #{{ $order->id }}</h4>
         <div class="d-flex flex-wrap gap-3 text-muted">
-            <div><strong>Branch:</strong> {{ $order->branch->branch_name ?? '' }} <small>({{ $order->branch->branch_code ?? '' }})</small></div>
-            <div><strong>Customer:</strong> {{ $order->customer->name ?? $order->customer_name }}</div>
-            <div><strong>Contact:</strong> {{ $order->customer->mobile_no ?? $order->customer_mobile }}</div>
-            <div><strong>Sold Date:</strong> {{ $order->created_at->format('Y-m-d H:i:s') }}</div>
+            <div><strong>Branch Name:</strong> {{ $order->branch->branch_name ?? '' }} <small>({{ $order->branch->branch_code ?? '' }})</small></div>
+            <div><strong>Customer Name:</strong> {{ $order->customer->name ?? $order->customer_name }}</div>
+            <div><strong>Customer Mobile:</strong> {{ $order->customer->mobile_no ?? $order->customer_mobile }}</div>
+            <div><strong>Sold Date:</strong> {{ \Carbon\Carbon::parse($order->created_at)->format('d M,Y \ g:i A') }}</div>
+            <div><strong>Seller Name:</strong> {{ $order->seller->name ?? '' }}</div>
+            <div><strong>Seller Mobile:</strong> {{ $order->seller->phone_no ?? '' }}</div>
         </div>
     </div>
 

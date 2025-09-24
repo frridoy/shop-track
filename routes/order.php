@@ -20,6 +20,5 @@ Route::group(
             ->name('products.byCode');
 
         Route::get('show/{orderId}', [OrderController::class, 'show'])->name('show');
-
     }
 );

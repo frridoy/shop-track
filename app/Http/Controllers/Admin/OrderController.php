@@ -72,8 +72,9 @@ class OrderController extends Controller
             $sellers = User::where('user_type', 3)->select('id', 'name')->get();
         }
         elseif ($user->user_type == 2) {
-            $sellers = User::where('user_type', 3)
+            $sellers = User::whereIn('user_type', [2, 3])
                 ->where('branch_id', $user->branch_id)
+                ->orWhere('id', $user->id)
                 ->select('id', 'name')
                 ->get();
         }
@@ -85,13 +86,13 @@ class OrderController extends Controller
 
         $totalAmount = $orders->sum('total_price');
 
-        $branches = Branch::select('id', 'branch_name')->get();
+        $branches = Branch::where('is_active', 1)->select('id', 'branch_name')->get();
 
         return view('admin.order.index', compact('orders', 'branches', 'totalAmount', 'sellers'));
     }
     public function create()
     {
-        $customers = Customer::all();
+        $customers = Customer::select('id', 'name', 'mobile_no')->get();
         return view('admin.order.create', compact('customers'));
     }
 
@@ -202,10 +203,11 @@ class OrderController extends Controller
         $order = Order::with([
             'customer:id,name,mobile_no',
             'branch:id,branch_name,branch_code',
+            'seller:id,name,phone_no',
             'orderDetails:id,order_id,product_id,quantity,selling_price,color,size',
             'orderDetails.product:id,product_name,product_code'
         ])
-            ->select('id', 'branch_id', 'customer_id', 'customer_name', 'customer_mobile', 'total_price', 'created_at')
+            ->select('id', 'branch_id', 'seller_id','customer_id', 'customer_name', 'customer_mobile', 'total_price', 'created_at')
             ->findOrFail($id);
 
         return view('admin.order.show', compact('order'));
