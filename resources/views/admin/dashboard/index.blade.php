@@ -17,7 +17,7 @@
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
                                 <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                    Total Sales ({{ now()->format('F Y') }})
+                                    Total Sales {{ $pageTitle }} ({{ now()->format('F Y') }})
                                 </div>
                                 <div class="h5 mb-0 font-weight-bold text-gray-800">
                                     {{ $totalSalesMonthly ?? 0 }}
@@ -37,7 +37,7 @@
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
                                 <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                    Total Orders
+                                    Total Orders ({{ $pageTitle }})
                                 </div>
                                 <div class="h5 mb-0 font-weight-bold text-gray-800">
                                     {{ $totalOrders ?? 0 }}
@@ -57,7 +57,9 @@
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
                                 <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
-                                    Products in Stock
+                                    Products in Stock @if (auth()->user()->user_type == 2 || auth()->user()->user_type == 3)
+                                        ({{ $branchName ?? '' }})
+                                    @endif
                                 </div>
                                 <div class="row no-gutters align-items-center">
                                     <div class="col-auto">
@@ -88,7 +90,7 @@
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
                                 <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                    Registered Customers
+                                    All Registered Customers
                                 </div>
                                 <div class="h5 mb-0 font-weight-bold text-gray-800">
                                     {{ $registeredCustomers ?? 0 }}
@@ -112,13 +114,14 @@
 
                         <div class="dropdown no-arrow ms-3" style="margin-left: -10px;">
                             <select id="salesYear" class="form-select form-select-sm">
-                                @foreach (range(date('Y'), 2025) as $year)
+                                @foreach (range(2024, date('Y')) as $year)
                                     <option value="{{ $year }}" {{ $year == date('Y') ? 'selected' : '' }}>
                                         {{ $year }}
                                     </option>
                                 @endforeach
                             </select>
                         </div>
+
                     </div>
 
                     <div class="card-body">

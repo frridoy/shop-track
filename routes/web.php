@@ -7,7 +7,6 @@ Route::get('/', function () {
     return redirect()->route('login');
 });
 
-
 Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/sales-data/{year}', [DashboardController::class, 'getSalesData'])->name('sales-data');

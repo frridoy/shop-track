@@ -40,6 +40,7 @@ class LookupController extends Controller
             ]);
         }
     }
+
     public function edit($id)
     {
         $lookup = Lookup::findOrFail($id);

@@ -45,15 +45,14 @@ class ProductController extends Controller
 
         $sizes = Lookup::where('lookup_type', 1)->select('id', 'lookup_name')->get();
         $colors = Lookup::where('lookup_type', 2)->select('id', 'lookup_name')->get();
+
         return view('admin.product.create', compact('productTypes', 'sizes', 'colors'));
     }
     public function store(Request $request)
     {
-        // 1. Validation rules
         $rules = [
             'product_type_id' => 'required|exists:product_types,id',
             'products' => 'required|array|min:1',
-            // 'products.*.product_name' => 'required|string|max:100|distinct',
             'products.*.color' => 'nullable|numeric|exists:lookups,id',
             'products.*.size' => 'nullable|numeric|exists:lookups,id',
             'products.*.stock_qty' => 'required|numeric|min:0',
@@ -64,7 +63,6 @@ class ProductController extends Controller
             'products.*.is_active' => 'required|in:0,1',
         ];
 
-        // 2. Custom error messages
         $messages = [];
         foreach ($request->products ?? [] as $i => $product) {
             $row = $i + 1;
@@ -87,7 +85,6 @@ class ProductController extends Controller
         $month = $now->format('m');
         $year = $now->format('y');
 
-        // 3. Determine next product code sequence
         $lastProduct = Product::whereYear('created_at', $now->year)
             ->where('product_code', 'like', 'P' . $month . $year . '-%')
             ->orderByDesc('product_code')
@@ -98,12 +95,10 @@ class ProductController extends Controller
             $startSequence = (int)$matches[1] + 1;
         }
 
-        // 4. Collect all size and color IDs
         $sizeIds = collect($productsData)->pluck('size')->filter()->unique();
         $colorIds = collect($productsData)->pluck('color')->filter()->unique();
         $lookups = Lookup::whereIn('id', $sizeIds->merge($colorIds))->get()->keyBy('id');
 
-        // 5. Create products
         $createdProducts = [];
         foreach ($productsData as $index => $product) {
             $sequence = $startSequence + $index;
@@ -125,26 +120,22 @@ class ProductController extends Controller
                 'created_by' => $createdBy,
             ]);
 
-            // 6. size and color names for barcode view
             $createdProduct->size_name = $product['size'] ? ($lookups[$product['size']]->lookup_name ?? null) : null;
             $createdProduct->color_name = $product['color'] ? ($lookups[$product['color']]->lookup_name ?? null) : null;
 
-            // 7. Push same product multiple times = stock_qty barcodes
             for ($i = 0; $i < $product['stock_qty']; $i++) {
                 $createdProducts[] = $createdProduct;
             }
         }
 
-        // 7. Return to barcode view
         return view('admin.product.barcode', compact('createdProducts'));
     }
+
     public function singleProductBarcode(Product $product)
     {
-        // attach color & size names
         $product->color_name = $product->color ? (Lookup::find($product->color)->lookup_name ?? null) : null;
         $product->size_name  = $product->size ? (Lookup::find($product->size)->lookup_name ?? null) : null;
 
-        // repeat product according to stock_qty
         $createdProducts = [];
         for ($i = 0; $i < $product->stock_qty; $i++) {
             $createdProducts[] = $product;
@@ -158,6 +149,7 @@ class ProductController extends Controller
         $product = Product::with('type')->findOrFail($id);
         $size = Lookup::where('lookup_type', 1)->where('id', $product->size)->value('lookup_name');
         $color = Lookup::where('lookup_type', 2)->where('id', $product->color)->value('lookup_name');
+        
         return view('admin.product.show', compact('product', 'size', 'color'));
     }
 }

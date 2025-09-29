@@ -12,7 +12,7 @@ Route::group(
     ],
     function () {
 
-        Route::get('/', [OrderController::class, 'index'])->name('index');
+        Route::get('index', [OrderController::class, 'index'])->name('index');
         Route::get('create', [OrderController::class, 'create'])->name('create');
         Route::post('store',        [OrderController::class, 'store'])->name('store');
         Route::get('products/by-code/{code}', [OrderController::class, 'getProductByBarcode'])
