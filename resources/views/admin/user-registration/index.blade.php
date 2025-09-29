@@ -22,6 +22,7 @@
                                 <th>Email</th>
                                 <th>Mobile No</th>
                                 <th>Branch</th>
+                                <th>Position</th>
                                 <th>Date of Joining</th>
                                 <th>Status</th>
                                 <th>Action</th>
@@ -36,6 +37,7 @@
                                     <td>{{ $user->email ?? '' }}</td>
                                     <td>{{ $user->phone_no ?? '' }}</td>
                                     <td>{{ $user->branch->branch_name ?? '' }}</td>
+                                    <td>{{ $user->user_type == 2 ? 'Manager' : 'Salesman' }}</td>
                                     <td>{{ $user->date_of_joining ?? '' }}</td>
                                     <td>{{ $user->is_active == 1 ? 'Active' : 'Inactive' }}</td>
                                     <td><a href="{{ route('users.edit', $user->id) }}" class="btn btn-sm btn-primary">Edit</a></td>
