@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\StatusToggleController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -10,6 +11,7 @@ Route::get('/', function () {
 Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/sales-data/{year}', [DashboardController::class, 'getSalesData'])->name('sales-data');
+    Route::post('toggle-status/{id}', [StatusToggleController::class, 'toggle'])->name('toggleStatus');
 });
 
 require __DIR__ . '/auth.php';

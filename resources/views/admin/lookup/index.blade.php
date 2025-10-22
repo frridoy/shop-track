@@ -69,7 +69,14 @@
                             <td>{{ $loop->iteration }}</td>
                             <td>{{ $lookup->lookup_name ?? '' }}</td>
                             <td>{{ config('lookup')[$lookup->lookup_type] ?? '' }}</td>
-                            <td>{{ $lookup->is_active == 1 ? 'Active' : 'Inactive' }}</td>
+                            {{-- <td>{{ $lookup->is_active == 1 ? 'Active' : 'Inactive' }}</td> --}}
+                            <td>
+                                <x-status-toggle
+                                    :id="$lookup->id"
+                                    :status="$lookup->is_active"
+                                    :route="route('admin.toggleStatus', $lookup->id) . '?model=' . urlencode(App\Models\Lookup::class)"
+                                />
+                            </td>
                             <td><a href="{{ route('lookup.edit', $lookup->id) }}"
                                     class="btn btn-sm btn-primary">Edit</a></td>
                         </tr>

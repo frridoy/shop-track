@@ -29,7 +29,13 @@
                                 <tr>
                                     <td>{{ $loop->iteration }}</td>
                                     <td>{{ $productType->product_type_name ?? '' }}</td>
-                                    <td>{{ $productType->is_active == 1 ? 'Active' : 'Inactive' }}</td>
+                                    <td>
+                                        <x-status-toggle
+                                            :id="$productType->id"
+                                            :status="$productType->is_active"
+                                            :route="route('admin.toggleStatus', $productType->id) . '?model=' . urlencode(App\Models\ProductType::class)"
+                                        />
+                                    </td>
                                     <td><a href="{{route('products.types.edit', $productType->id)}}" class="btn btn-sm btn-warning">Edit</a></td>
                                 </tr>
                             @empty

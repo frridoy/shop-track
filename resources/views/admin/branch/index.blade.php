@@ -37,7 +37,13 @@
                                     <td>{{ $branch->branch_email ?? '' }}</td>
                                     <td>{{ $branch->branch_contact ?? '' }}</td>
                                     <td>{{ $branch->branch_address ?? '' }}</td>
-                                    <td>{{ $branch->is_active == 1 ? 'Active' : 'Inactive' }}</td>
+                                    <td>
+                                        <x-status-toggle
+                                            :id="$branch->id"
+                                            :status="$branch->is_active"
+                                            :route="route('admin.toggleStatus', $branch->id) . '?model=' . urlencode(App\Models\Branch::class)"
+                                        />
+                                    </td>
                                     <td></td>
                                 </tr>
                             @empty

@@ -41,7 +41,13 @@
                                     <td>{{ $customer->blood_group ?? '' }}</td>
                                     <td>{{ $customer->dob ? date('d M, Y', strtotime($customer->dob)) : '' }}</td>
                                     <td>{{ $customer->address ?? '' }}</td>
-                                    <td>{{ $customer->is_active == 1 ? 'Active' : 'Inactive' }}</td>
+                                    <td>
+                                        <x-status-toggle
+                                            :id="$customer->id"
+                                            :status="$customer->is_active"
+                                            :route="route('admin.toggleStatus', $customer->id) . '?model=' . urlencode(App\Models\Customer::class)"
+                                        />
+                                    </td>
                                     <td>
                                         <button class="btn btn-info btn-sm open-modal"
                                             data-url="{{ route('customers.edit', $customer->id) }}"
