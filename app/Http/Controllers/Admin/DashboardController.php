@@ -23,18 +23,20 @@ class DashboardController extends Controller
         if ($authUser->user_type == 1) {
             $recentOrders = Order::with([
                 'orderDetails.product:id,product_name',
-                'customer:id,name'
+                'customer:id,name',
+                'seller:id,name'
             ])
-                ->select('id', 'customer_id', 'customer_name', 'total_price', 'created_at')
+                ->select('id', 'customer_id', 'seller_id', 'customer_name', 'total_price', 'created_at')
                 ->orderBy('id', 'desc')
                 ->take(5)
                 ->get();
         } elseif ($authUser->user_type == 2) {
             $recentOrders = Order::with([
                 'orderDetails.product:id,product_name',
-                'customer:id,name'
+                'customer:id,name',
+                'seller:id,name'
             ])
-                ->select('id', 'customer_id', 'customer_name', 'total_price', 'created_at')
+                ->select('id', 'customer_id', 'customer_name', 'seller_id', 'total_price', 'created_at')
                 ->where('branch_id', $branchId)
                 ->orderBy('id', 'desc')
                 ->take(5)
@@ -42,15 +44,18 @@ class DashboardController extends Controller
         } else {
             $recentOrders = Order::with([
                 'orderDetails.product:id,product_name',
-                'customer:id,name'
+                'customer:id,name',
+                'seller:id,name'
             ])
-                ->select('id', 'customer_id', 'customer_name', 'total_price', 'created_at')
+                ->select('id', 'customer_id', 'customer_name', 'seller_id', 'total_price', 'created_at')
                 ->where('branch_id', $branchId)
                 ->where('seller_id', $authId)
                 ->orderBy('id', 'desc')
                 ->take(5)
                 ->get();
         }
+
+        // dd($recentOrders);
 
         if ($authUser->user_type == 1) {
             $totalOrders = Order::count();

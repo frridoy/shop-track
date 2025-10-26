@@ -175,6 +175,7 @@
                                         <th>Order ID</th>
                                         <th>Customer</th>
                                         <th>Amount (BDT)</th>
+                                        <th>Seller Name</th>
                                         <th>Date</th>
                                         <th>Action</th>
                                     </tr>
@@ -185,6 +186,7 @@
                                             <td>#{{ $order->id }}</td>
                                             <td>{{ $order->customer->name ?? $order->customer_name }}</td>
                                             <td>{{ number_format($order->total_price, 2) }}</td>
+                                            <td>{{ $order->seller->name ?? '' }}</td>
                                             <td>{{ $order->created_at->format('Y-m-d') }}</td>
                                             <td>
                                                 <button class="btn btn-info btn-sm open-modal"

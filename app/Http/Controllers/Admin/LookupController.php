@@ -8,9 +8,25 @@ use Illuminate\Http\Request;
 
 class LookupController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $lookups = Lookup::select('id', 'lookup_name', 'lookup_type', 'is_active', 'created_by')->whereNull('is_updated')->get();
+        $query = Lookup::select('id', 'lookup_name', 'lookup_type', 'is_active', 'created_by')
+            ->whereNull('is_updated');
+
+        if ($request->filled('lookup_name')) {
+            $query->where('lookup_name', 'like', '%' . $request->lookup_name . '%');
+        }
+
+        if ($request->filled('lookup_type')) {
+            $query->where('lookup_type', $request->lookup_type);
+        }
+        if ($request->filled('is_active')) {
+            $query->where('is_active', $request->is_active);
+        }
+
+        $lookups = $query->orderBy('id', 'desc')->paginate(5);
+        $lookups->appends($request->all());
+
         return view('admin.lookup.index', compact('lookups'));
     }
 
@@ -66,7 +82,6 @@ class LookupController extends Controller
                 'lookup_name' => $request->lookup_name,
                 'is_active'   => $request->is_active,
             ]);
-
         } else {
             $lookup->update([
                 'lookup_type' => $request->lookup_type,
@@ -77,7 +92,7 @@ class LookupController extends Controller
 
         return response()->json([
             'status'   => 1,
-            'message'  =>'Lookup updated successfully',
+            'message'  => 'Lookup updated successfully',
             'redirect' => route('lookup.index'),
         ]);
     }
